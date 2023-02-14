@@ -1,0 +1,10 @@
+{
+    "email": "Email",
+    "password": "Password",
+    "email_placeholder": "Enter your email",
+    "password_placeholder": "Enter your password",
+    "login": "Login",
+    "user_loggedin": "You have been logged in",
+    "req_valid_email": "Please enter a valid email!",
+    "err_invalid_login": "Invalid login information!"
+}
