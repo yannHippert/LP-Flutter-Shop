@@ -61,7 +61,7 @@ class _AccounPageState extends State<AccounPage> {
     setState(() {
       _isLoading = true;
     });
-    if (_emailController.text != "ugly.sweater@shop.com" &&
+    if (_emailController.text != "ugly.sweater@shop.com" ||
         _passwordController.text != "password123") {
       showSimpleNotification(
           Row(children: [
