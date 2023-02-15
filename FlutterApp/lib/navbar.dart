@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_sweater_shop/accoun_page.dart';
+import 'package:flutter_sweater_shop/Pages/products_list_page.dart';
+import 'package:flutter_sweater_shop/account_page.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -16,10 +17,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     {
       "icon": Icons.list,
       "label": "Products",
-      "widget": Icon(
-        Icons.list,
-        size: iconSize,
-      ),
+      "widget": ProductListPage(),
     },
     {
       "icon": Icons.search,
@@ -32,7 +30,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     {
       "icon": Icons.account_circle,
       "label": "Account",
-      "widget": AccounPage(),
+      "widget": AccountPage(),
     },
   ];
 
@@ -55,8 +53,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
       appBar: AppBar(
         title: Text(_pages.elementAt(_selectedIndex)["label"]),
       ),
-      body: Center(
-        child: _pages.elementAt(_selectedIndex)["widget"],
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _pages.map<Widget>((e) => e["widget"]).toList(),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: getNavIcons(),

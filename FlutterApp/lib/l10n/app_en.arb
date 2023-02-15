@@ -6,5 +6,6 @@
     "login": "Login",
     "user_loggedin": "You have been logged in",
     "req_valid_email": "Please enter a valid email!",
+    "req_field": "This field is required!",
     "err_invalid_login": "Invalid login information!"
 }

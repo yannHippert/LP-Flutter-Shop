@@ -21,15 +21,14 @@ class MyApp extends StatelessWidget {
           textSelectionTheme:
               TextSelectionThemeData(selectionColor: Colors.blue.shade900),
           textTheme: const TextTheme(
-                  bodyMedium: TextStyle(),
-                  displayLarge: TextStyle(
-                    color: Colors.white,
-                    fontSize: 30.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  labelLarge:
-                      TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold))
-              .apply(
+            bodyMedium: TextStyle(),
+            displayLarge: TextStyle(
+              color: Colors.white,
+              fontSize: 30.0,
+              fontWeight: FontWeight.bold,
+            ),
+            labelLarge: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          ).apply(
             bodyColor: Colors.white,
             fontFamily: 'OpenSans',
           ),

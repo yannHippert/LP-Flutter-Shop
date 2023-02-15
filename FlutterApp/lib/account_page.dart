@@ -6,18 +6,19 @@ import 'package:flutter_sweater_shop/Components/loading_button.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-class AccounPage extends StatefulWidget {
-  const AccounPage({Key? key}) : super(key: key);
+class AccountPage extends StatefulWidget {
+  const AccountPage({Key? key}) : super(key: key);
 
   @override
   _AccounPageState createState() => _AccounPageState();
 }
 
-class _AccounPageState extends State<AccounPage> {
+class _AccounPageState extends State<AccountPage> {
   bool _passwordVisible = false;
   final _emailController = TextEditingController();
   String? _emailError;
   final _passwordController = TextEditingController();
+  String? _passwordError;
   bool _isLoading = false;
 
   Timer? _timer;
@@ -49,7 +50,13 @@ class _AccounPageState extends State<AccounPage> {
     });
   }
 
-  void _onPasswordChange() {}
+  void _onPasswordChange() {
+    String password = _passwordController.text;
+    setState(() {
+      _passwordError =
+          password.length > 2 ? null : AppLocalizations.of(context)!.req_field;
+    });
+  }
 
   void _togglePasswordVisbility() {
     setState(() {
@@ -143,6 +150,7 @@ class _AccounPageState extends State<AccounPage> {
       autocorrect: !isPassword,
       controller: controller,
       decoration: InputDecoration(
+        contentPadding: const EdgeInsets.only(top: 16.0),
         border: InputBorder.none,
         prefixIcon: Icon(
           prefixIcon,
@@ -180,6 +188,7 @@ class _AccounPageState extends State<AccounPage> {
   Widget _buildPasswordTF() {
     return _buildFormField(
         label: AppLocalizations.of(context)!.password,
+        error: _passwordError == null ? "" : _passwordError!,
         input: _buildInput(
             hintText: AppLocalizations.of(context)!.password_placeholder,
             keyboardType: TextInputType.visiblePassword,
