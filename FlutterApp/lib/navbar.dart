@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sweater_shop/Pages/products_list_page.dart';
-import 'package:flutter_sweater_shop/account_page.dart';
+import 'package:flutter_sweater_shop/Pages/account_page.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);

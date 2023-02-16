@@ -30,6 +30,10 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
     overlay_support: any
+    flutter_redux: any
+    settings_ui: any
+    flutter_secure_storage: any
+    http: any
     flutter:
         sdk: flutter
     flutter_localizations:
@@ -61,6 +65,9 @@ flutter:
     # included with your application, so that you can use the icons in
     # the material Icons class.
     uses-material-design: true
+
+    assets:
+        - assets/images/
 
     # To add assets to your application, add an assets section, like this:
     # assets:

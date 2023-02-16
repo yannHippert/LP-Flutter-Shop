@@ -2,18 +2,24 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_sweater_shop/Components/loading_button.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
+import 'package:flutter_sweater_shop/redux/actions.dart';
+import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:overlay_support/overlay_support.dart';
 
-class AccountPage extends StatefulWidget {
-  const AccountPage({Key? key}) : super(key: key);
+class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
-  _AccounPageState createState() => _AccounPageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _AccounPageState extends State<AccountPage> {
+class _LoginPageState extends State<LoginPage> {
+  final _storage = const FlutterSecureStorage();
+
   bool _passwordVisible = false;
   final _emailController = TextEditingController();
   String? _emailError;
@@ -64,44 +70,68 @@ class _AccounPageState extends State<AccountPage> {
     });
   }
 
-  void _handleLogin() {
+  Future<void> _saveLoginInfo(
+      {required String email, required String password}) async {
+    await _storage.write(key: "KEY_EMAIL", value: email);
+    await _storage.write(key: "KEY_PASSWORD", value: password);
+  }
+
+  Future<void> _handleLoginSuccess(
+      {required String email, required String password}) async {
+    _saveLoginInfo(email: email, password: password);
+    StoreProvider.of<AppState>(context).dispatch(LoginAction(email));
+
+    showSimpleNotification(
+        Row(children: [
+          const Icon(
+            Icons.check,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 10.0),
+          Text(
+            AppLocalizations.of(context)!.user_loggedin,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        ]),
+        background: Colors.green);
+  }
+
+  void _showErrorNotification() {
+    showSimpleNotification(
+        Row(children: [
+          const Icon(
+            Icons.clear,
+            color: Colors.white,
+          ),
+          const SizedBox(width: 10.0),
+          Text(
+            AppLocalizations.of(context)!.err_invalid_login,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+        ]),
+        background: Colors.red);
+  }
+
+  Future<void> _handleLogin() async {
+    String email = _emailController.text.trim();
+    String password = _passwordController.text;
+
     setState(() {
       _isLoading = true;
     });
-    if (_emailController.text != "ugly.sweater@shop.com" ||
-        _passwordController.text != "password123") {
-      showSimpleNotification(
-          Row(children: [
-            const Icon(
-              Icons.clear,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 10.0),
-            Text(
-              AppLocalizations.of(context)!.err_invalid_login,
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-          ]),
-          background: Colors.red);
+
+    int statusCode = await Future.delayed(
+        const Duration(seconds: 2),
+        () =>
+            email != "sweater@shop.com" || password != "password" ? 409 : 200);
+    //final response = await autheticate(email: email, password: password);
+    //if (response.statusCode == 200) {
+    if (statusCode != 200) {
+      _showErrorNotification();
     } else {
-      showSimpleNotification(
-          Row(children: [
-            const Icon(
-              Icons.check,
-              color: Colors.white,
-            ),
-            const SizedBox(width: 10.0),
-            Text(
-              AppLocalizations.of(context)!.user_loggedin,
-              style: Theme.of(context).textTheme.labelLarge,
-            ),
-          ]),
-          background: Colors.green);
+      _handleLoginSuccess(email: email, password: password);
     }
-    _timer = Timer(
-      const Duration(seconds: 2),
-      () => setState(() => _isLoading = false),
-    );
+    setState(() => _isLoading = false);
   }
 
   Row _buildLabel(String label, String? error) {
@@ -150,7 +180,7 @@ class _AccounPageState extends State<AccountPage> {
       autocorrect: !isPassword,
       controller: controller,
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.only(top: 16.0),
+        contentPadding: const EdgeInsets.only(top: 12.0),
         border: InputBorder.none,
         prefixIcon: Icon(
           prefixIcon,
