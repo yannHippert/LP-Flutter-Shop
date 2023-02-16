@@ -1,9 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
-const CBoxshadow = BoxShadow(
-  color: Colors.black12,
-  blurRadius: 6.0,
-  offset: Offset(0, 2),
-);
+final currFormatter = NumberFormat.simpleCurrency(locale: "fr_EU");
 
-BorderRadius CBorderRadius = BorderRadius.circular(10.0);
+final dateFormatter = DateFormat("dd/MM/yyyy HH:mm");

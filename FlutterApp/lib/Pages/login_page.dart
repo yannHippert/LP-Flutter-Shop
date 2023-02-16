@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_sweater_shop/Components/loading_button.dart';
-import 'package:flutter_sweater_shop/Utilities/constants.dart';
+import 'package:flutter_sweater_shop/Utilities/styles.dart';
 import 'package:flutter_sweater_shop/redux/actions.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:overlay_support/overlay_support.dart';
@@ -180,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
       autocorrect: !isPassword,
       controller: controller,
       decoration: InputDecoration(
-        contentPadding: const EdgeInsets.only(top: 12.0),
+        contentPadding: const EdgeInsets.only(top: 16.0),
         border: InputBorder.none,
         prefixIcon: Icon(
           prefixIcon,

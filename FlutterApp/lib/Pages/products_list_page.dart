@@ -1,10 +1,8 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Components/product_card.dart';
 import 'package:flutter_sweater_shop/Models/product.dart';
-import 'package:flutter_sweater_shop/Models/product_color.dart';
 import 'package:flutter_sweater_shop/Pages/product_page.dart';
 import 'package:flutter_sweater_shop/redux/actions.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';

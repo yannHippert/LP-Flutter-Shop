@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sweater_shop/Models/order.dart';
 import 'package:flutter_sweater_shop/Models/price.dart';
 import 'package:flutter_sweater_shop/Models/product.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
@@ -44,4 +45,15 @@ List<Product> getPorudctList({int count = 10}) {
     products.add(sweater);
   }
   return products;
+}
+
+Order order = Order(
+    id: "o-001", totalPrice: 99.99, products: [sweater], date: DateTime.now());
+
+List<Order> getOrderList({int count = 10}) {
+  List<Order> orders = [];
+  for (int _ in range(1, 12)) {
+    orders.add(order);
+  }
+  return orders;
 }

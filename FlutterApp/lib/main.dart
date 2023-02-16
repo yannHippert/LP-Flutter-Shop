@@ -1,10 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_sweater_shop/Utilities/authentication.dart';
 import 'package:flutter_sweater_shop/Utilities/fixtures.dart';
 import 'package:flutter_sweater_shop/navbar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -28,16 +26,15 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   final Store<AppState> _store = Store<AppState>(updateProductsReducer,
-      initialState: AppState(products: getPorudctList()));
+      initialState:
+          AppState(products: getPorudctList(), orders: getOrderList()));
   final _storage = const FlutterSecureStorage();
   final GlobalKey _key = GlobalKey();
 
   Future<String?> _readFromStorage() async {
     String email = await _storage.read(key: "KEY_EMAIL") ?? "";
     String password = await _storage.read(key: "KEY_PASSWORD") ?? "";
-    if (email == "" || password == "") {
-      return null;
-    }
+    if (email == "" || password == "") return null;
 
     //final response = await autheticate(email: email, password: password);
     //if (response.statusCode == 200) {
@@ -46,6 +43,7 @@ class _AppState extends State<App> {
     if (statusCode == 200) {
       return email;
     }
+    return null;
   }
 
   void _onLoginSuccess(String email) {

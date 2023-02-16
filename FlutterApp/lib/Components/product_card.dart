@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sweater_shop/Models/product.dart';
-import 'package:flutter_sweater_shop/Utilities/constants.dart';
+import 'package:flutter_sweater_shop/Utilities/styles.dart';
 
 // ignore: must_be_immutable
 class ProductCard extends StatelessWidget {

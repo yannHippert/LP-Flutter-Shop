@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_sweater_shop/Models/user_info.dart';
+import 'package:flutter_sweater_shop/Pages/orders_list_page.dart';
 import 'package:flutter_sweater_shop/Pages/products_list_page.dart';
 import 'package:flutter_sweater_shop/Pages/account_page.dart';
+import 'package:flutter_sweater_shop/redux/app_state.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
@@ -20,12 +24,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
       "widget": ProductListPage(),
     },
     {
-      "icon": Icons.search,
-      "label": "Search",
-      "widget": Icon(
-        Icons.search,
-        size: iconSize,
-      ),
+      "icon": Icons.shopping_bag,
+      "label": "Orders",
+      "widget": OrderListPage(),
     },
     {
       "icon": Icons.account_circle,
@@ -52,6 +53,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_pages.elementAt(_selectedIndex)["label"]),
+        actions: <Widget>[
+          StoreConnector<AppState, UserInfo>(
+              converter: (store) => store.state.userInfo,
+              builder: (context, UserInfo vm) => vm.isLoggedIn
+                  ? const Icon(Icons.vpn_key)
+                  : const Icon(Icons.lock)),
+          const SizedBox(width: 16)
+        ],
       ),
       body: IndexedStack(
         index: _selectedIndex,
