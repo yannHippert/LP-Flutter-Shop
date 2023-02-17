@@ -31,6 +31,7 @@ environment:
 dependencies:
     overlay_support: any
     flutter_redux: any
+    redux_thunk: any
     settings_ui: any
     flutter_secure_storage: any
     http: any

@@ -4,6 +4,8 @@ import 'package:flutter_sweater_shop/redux/actions.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 
 AppState updateProductsReducer(AppState state, dynamic action) {
+  if (action is AuthenticateAction) {}
+
   if (action is LoginAction) {
     return AppState(
         userInfo: UserInfo(email: action.email), products: state.products);
