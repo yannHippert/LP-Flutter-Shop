@@ -40,7 +40,7 @@ Product sweater = Product(
 
 List<Product> getPorudctList({int count = 10}) {
   List<Product> products = [];
-  for (int _ in range(1, 12)) {
+  for (int _ in range(0, (count / 2).floor())) {
     products.add(bonnet);
     products.add(sweater);
   }

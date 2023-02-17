@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_sweater_shop/redux/actions.dart';
+import 'package:flutter_sweater_shop/redux/actions/authentication.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:settings_ui/settings_ui.dart';
 

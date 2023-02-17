@@ -2,13 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_sweater_shop/Components/loading_button.dart';
+import 'package:flutter_sweater_shop/Widgets/loading_button.dart';
+import 'package:flutter_sweater_shop/Exceptions/ApiException.dart';
 import 'package:flutter_sweater_shop/Utilities/styles.dart';
-import 'package:flutter_sweater_shop/redux/actions.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
+import 'package:flutter_sweater_shop/redux/middleware.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:flutter_redux/flutter_redux.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -27,8 +28,6 @@ class _LoginPageState extends State<LoginPage> {
   String? _passwordError;
   bool _isLoading = false;
 
-  Timer? _timer;
-
   @override
   void initState() {
     super.initState();
@@ -41,7 +40,6 @@ class _LoginPageState extends State<LoginPage> {
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
-    _timer?.cancel();
     super.dispose();
   }
 
@@ -76,11 +74,7 @@ class _LoginPageState extends State<LoginPage> {
     await _storage.write(key: "KEY_PASSWORD", value: password);
   }
 
-  Future<void> _handleLoginSuccess(
-      {required String email, required String password}) async {
-    _saveLoginInfo(email: email, password: password);
-    StoreProvider.of<AppState>(context).dispatch(LoginAction(email));
-
+  void _showLoginNotification() {
     showSimpleNotification(
         Row(children: [
           const Icon(
@@ -116,21 +110,21 @@ class _LoginPageState extends State<LoginPage> {
     String email = _emailController.text.trim();
     String password = _passwordController.text;
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
-    int statusCode = await Future.delayed(
-        const Duration(seconds: 2),
-        () =>
-            email != "sweater@shop.com" || password != "password" ? 409 : 200);
-    //final response = await autheticate(email: email, password: password);
-    //if (response.statusCode == 200) {
-    if (statusCode != 200) {
+    final store = StoreProvider.of<AppState>(context);
+    Completer completer = Completer();
+    store.dispatch(
+      authenticate(email, password, completer),
+    );
+    try {
+      await completer.future;
+      _saveLoginInfo(email: email, password: password);
+      _showLoginNotification();
+    } on ApiException catch (_) {
       _showErrorNotification();
-    } else {
-      _handleLoginSuccess(email: email, password: password);
     }
+
     setState(() => _isLoading = false);
   }
 

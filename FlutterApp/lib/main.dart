@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_sweater_shop/Utilities/fixtures.dart';
 import 'package:flutter_sweater_shop/navbar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_sweater_shop/redux/reducer.dart';
 import 'package:overlay_support/overlay_support.dart';
+import 'package:redux_thunk/redux_thunk.dart';
 
 import 'redux/app_state.dart';
 import 'package:redux/redux.dart';
@@ -22,8 +22,7 @@ class App extends StatefulWidget {
 
 class _AppState extends State<App> {
   final Store<AppState> _store = Store<AppState>(updateProductsReducer,
-      initialState:
-          AppState(products: getPorudctList(), orders: getOrderList()));
+      initialState: AppState.initialState(), middleware: [thunkMiddleware]);
 
   @override
   Widget build(BuildContext context) {
