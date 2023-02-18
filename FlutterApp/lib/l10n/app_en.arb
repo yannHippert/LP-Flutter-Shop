@@ -6,6 +6,7 @@
     "login": "Login",
     "logout": "Logout",
     "account": "Account",
+    "product": "Product",
     "prodcuts": "Prodcuts",
     "orders": "Orders",
     "welcome_back": "Welcome back!",

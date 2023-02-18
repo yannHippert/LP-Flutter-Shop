@@ -5,10 +5,10 @@ import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class ProductCard extends StatelessWidget {
-  double width;
+  final double width;
   final Product product;
 
-  ProductCard({super.key, required this.product, this.width = 150});
+  const ProductCard({super.key, required this.product, this.width = 150});
 
   @override
   Widget build(BuildContext context) {
@@ -58,13 +58,13 @@ class SkeletonProductCard extends StatelessWidget {
         borderRadius: cBorderRadius,
         boxShadow: const [cBoxshadow],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade500,
-            highlightColor: Colors.grey.shade100,
-            child: Container(
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey.shade500,
+        highlightColor: Colors.grey.shade100,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
               width: width - 20,
               height: width - 20,
               decoration: BoxDecoration(
@@ -72,12 +72,8 @@ class SkeletonProductCard extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-          ),
-          const SizedBox(height: 5),
-          Shimmer.fromColors(
-            baseColor: Colors.grey.shade500,
-            highlightColor: Colors.grey.shade100,
-            child: Container(
+            const SizedBox(height: 5),
+            Container(
               width: width - 50,
               height: 14,
               decoration: BoxDecoration(
@@ -85,8 +81,8 @@ class SkeletonProductCard extends StatelessWidget {
                 color: Colors.white,
               ),
             ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }

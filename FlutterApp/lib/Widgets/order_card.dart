@@ -26,33 +26,25 @@ class SkeletonOrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: ListTile(
-        title: Shimmer.fromColors(
-          baseColor: Colors.grey.shade500,
-          highlightColor: Colors.grey.shade100,
-          child: Container(
+      child: Shimmer.fromColors(
+        baseColor: Colors.grey.shade500,
+        highlightColor: Colors.grey.shade100,
+        child: ListTile(
+          title: Container(
             height: 14,
             decoration: BoxDecoration(
               color: Colors.white70,
               borderRadius: cBorderRadius,
             ),
           ),
-        ),
-        subtitle: Shimmer.fromColors(
-          baseColor: Colors.grey.shade500,
-          highlightColor: Colors.grey.shade100,
-          child: Container(
+          subtitle: Container(
             height: 14,
             decoration: BoxDecoration(
               color: Colors.white70,
               borderRadius: cBorderRadius,
             ),
           ),
-        ),
-        trailing: Shimmer.fromColors(
-          baseColor: Colors.grey.shade500,
-          highlightColor: Colors.grey.shade100,
-          child: Container(
+          trailing: Container(
             height: 14,
             width: 50,
             decoration: BoxDecoration(

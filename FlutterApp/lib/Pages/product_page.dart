@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_sweater_shop/Models/product.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
 import 'package:intl/intl.dart';
@@ -69,7 +70,7 @@ class _ProductPageState extends State<ProductPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Second Route'),
+        title: Text(AppLocalizations.of(context)!.product),
       ),
       body: Container(
         padding: const EdgeInsets.all(10),

@@ -58,7 +58,7 @@ class _OrderListPageState extends State<OrderListPage> {
         builder: (context, List<Order> orders) {
           if (_isLoading) {
             return ListView.builder(
-                itemCount: 10,
+                itemCount: 5,
                 itemBuilder: (context, index) => const SkeletonOrderCard());
           }
           if (orders.isEmpty) return _buildNoEntries();
