@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sweater_shop/Models/product.dart';
 import 'package:flutter_sweater_shop/Utilities/styles.dart';
+import 'package:shimmer/shimmer.dart';
 
 // ignore: must_be_immutable
 class ProductCard extends StatelessWidget {
@@ -15,8 +16,8 @@ class ProductCard extends StatelessWidget {
       padding: const EdgeInsets.all(5),
       decoration: BoxDecoration(
         color: Colors.white10,
-        borderRadius: CBorderRadius,
-        boxShadow: const [CBoxshadow],
+        borderRadius: cBorderRadius,
+        boxShadow: const [cBoxshadow],
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -37,6 +38,54 @@ class ProductCard extends StatelessWidget {
             textAlign: TextAlign.left,
             style: Theme.of(context).textTheme.labelSmall,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class SkeletonProductCard extends StatelessWidget {
+  final double width;
+
+  const SkeletonProductCard({super.key, this.width = 150});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(5),
+      decoration: BoxDecoration(
+        color: Colors.white10,
+        borderRadius: cBorderRadius,
+        boxShadow: const [cBoxshadow],
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade500,
+            highlightColor: Colors.grey.shade100,
+            child: Container(
+              width: width - 20,
+              height: width - 20,
+              decoration: BoxDecoration(
+                borderRadius: cBorderRadius,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: 5),
+          Shimmer.fromColors(
+            baseColor: Colors.grey.shade500,
+            highlightColor: Colors.grey.shade100,
+            child: Container(
+              width: width - 50,
+              height: 14,
+              decoration: BoxDecoration(
+                borderRadius: cBorderRadius,
+                color: Colors.white,
+              ),
+            ),
+          )
         ],
       ),
     );

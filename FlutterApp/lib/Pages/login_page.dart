@@ -151,8 +151,8 @@ class _LoginPageState extends State<LoginPage> {
     return Container(
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.primary,
-          borderRadius: CBorderRadius,
-          boxShadow: const [CBoxshadow],
+          borderRadius: cBorderRadius,
+          boxShadow: const [cBoxshadow],
         ),
         height: 50.0,
         child: child);

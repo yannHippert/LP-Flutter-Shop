@@ -17,14 +17,14 @@ class LoadingButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        boxShadow: [CBoxshadow],
+        boxShadow: [cBoxshadow],
       ),
       child: ElevatedButton(
         onPressed: isLoading ? null : onClick,
         style: ButtonStyle(
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
-              borderRadius: CBorderRadius,
+              borderRadius: cBorderRadius,
             ),
           ),
         ),

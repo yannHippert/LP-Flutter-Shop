@@ -19,7 +19,7 @@ class ApiClient {
   static Future<List<Product>> fetchProducts(
       {int offset = 0, int limit = 10}) async {
     int statusCode =
-        await Future.delayed(const Duration(seconds: 1), () => 200);
+        await Future.delayed(const Duration(seconds: 2), () => 200);
     if (statusCode == 200) return getPorudctList(count: limit);
 
     throw ApiException(statusCode);
@@ -27,7 +27,7 @@ class ApiClient {
 
   static Future<List<Order>> fetchOrders() async {
     int statusCode =
-        await Future.delayed(const Duration(seconds: 2), () => 200);
+        await Future.delayed(const Duration(seconds: 1), () => 200);
     if (statusCode == 200) return getOrderList();
 
     throw ApiException(statusCode);

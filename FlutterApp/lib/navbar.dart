@@ -18,12 +18,12 @@ class BottomNavBar extends StatefulWidget {
   const BottomNavBar({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _BottomNavBarState createState() => _BottomNavBarState();
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
   final _storage = const FlutterSecureStorage();
-  static const iconSize = 150.0;
   int _selectedIndex = 0;
 
   static const List _pages = [

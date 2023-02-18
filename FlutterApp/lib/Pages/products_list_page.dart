@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_sweater_shop/Utilities/constants.dart';
 import 'package:flutter_sweater_shop/Widgets/product_card.dart';
 import 'package:flutter_sweater_shop/Exceptions/ApiException.dart';
 import 'package:flutter_sweater_shop/Models/product.dart';
@@ -13,6 +12,10 @@ import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware.dart';
 import 'package:redux/redux.dart';
 
+const double sidePadding = 20;
+const double itemGap = 10;
+const double iconSize = 48;
+
 class ProductListPage extends StatefulWidget {
   const ProductListPage({Key? key}) : super(key: key);
 
@@ -21,10 +24,6 @@ class ProductListPage extends StatefulWidget {
 }
 
 class _ProductsListPageState extends State<ProductListPage> {
-  static const double sidePadding = 20;
-  static const double itemGap = 10;
-  static const double iconSize = 48;
-
   bool _isLoading = true;
 
   double get screenWidth {
@@ -87,30 +86,42 @@ class _ProductsListPageState extends State<ProductListPage> {
         onInit: _fetchProducts,
         converter: (store) => store.state.products,
         builder: (context, List<Product> products) {
-          if (_isLoading) return buildLoadingIndicator();
+          if (_isLoading) {
+            return GridView.count(
+              padding: const EdgeInsets.all(sidePadding),
+              shrinkWrap: true,
+              crossAxisSpacing: itemGap,
+              mainAxisSpacing: itemGap,
+              crossAxisCount: columnCount,
+              childAspectRatio: 0.9,
+              children: List.generate(
+                10,
+                (index) => SkeletonProductCard(width: elementWidth),
+              ),
+            );
+          }
           if (products.isEmpty) return _buildNoEntries();
           return GridView.count(
-            padding: const EdgeInsets.all(sidePadding),
-            shrinkWrap: true,
-            crossAxisSpacing: itemGap,
-            mainAxisSpacing: itemGap,
-            crossAxisCount: columnCount,
-            childAspectRatio: 0.9,
-            children: [
-              Text("Products ${products.length}"),
-              ...products
-                  .map(
-                    (Product product) => GestureDetector(
-                      onTap: () => _onTap(product),
-                      child: ProductCard(
-                        product: product,
-                        width: elementWidth,
+              padding: const EdgeInsets.all(sidePadding),
+              shrinkWrap: true,
+              crossAxisSpacing: itemGap,
+              mainAxisSpacing: itemGap,
+              crossAxisCount: columnCount,
+              childAspectRatio: 0.9,
+              children: [
+                SkeletonProductCard(width: elementWidth),
+                ...products
+                    .map(
+                      (Product product) => GestureDetector(
+                        onTap: () => _onTap(product),
+                        child: ProductCard(
+                          product: product,
+                          width: elementWidth,
+                        ),
                       ),
-                    ),
-                  )
-                  .toList(),
-            ],
-          );
+                    )
+                    .toList(),
+              ]);
         });
   }
 }
