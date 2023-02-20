@@ -85,7 +85,7 @@ class _ProductPageState extends State<ProductPage> {
                   product.name,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                Text(oCcy.format(product.basePrice))
+                Text(oCcy.format(product.minPrice))
               ],
             ),
             _buildColorSelection()

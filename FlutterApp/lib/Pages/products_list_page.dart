@@ -42,8 +42,7 @@ class _ProductsListPageState extends State<ProductListPage> {
   }
 
   void _onTap(Product product) {
-    product.isSelected = !product.isSelected;
-    StoreProvider.of<AppState>(context).dispatch(UpdateProductAction(product));
+    //StoreProvider.of<AppState>(context).dispatch(UpdateProductAction(product));
     Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => ProductPage(product: product)),
     );

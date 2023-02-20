@@ -1,76 +1,39 @@
-import 'package:flutter_sweater_shop/Models/price.dart';
+import 'package:flutter_sweater_shop/Models/category.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
+import 'package:flutter_sweater_shop/Models/products/pullover.dart';
+import 'package:flutter_sweater_shop/Models/size.dart';
+import 'package:flutter_sweater_shop/Models/variant.dart';
 
-class Product {
-  final String _id;
-  final String _name;
-  final double _basePrice;
-  final String _image;
-  final List<PropertyPrice<ProductColor>> _colors;
-  final List<PropertyPrice<String>> _sizes;
-  bool isSelected = false;
+abstract class Product {
+  final int id;
+  final String name;
+  final String image;
+  final List<ProductVariant> variants;
 
-  Product(
-      {required String id,
-      required String name,
-      required String image,
-      required double basePrice,
-      List<PropertyPrice<ProductColor>>? colors,
-      List<PropertyPrice<String>>? sizes})
-      : _id = id,
-        _name = name,
-        _basePrice = basePrice,
-        _image = image,
-        _colors = colors ?? [],
-        _sizes = sizes ?? [];
+  Product(this.id, this.name, this.image, this.variants);
+
+  /*factory Product.named(
+          {required int id,
+          required String name,
+          required String image,
+          required List<ProductVariant> varianrs}) =>
+      Product(id, name, image, varianrs);*/
 
   factory Product.fromJson(Map<String, dynamic> json) {
-    return Product(
-        id: json['id'],
-        name: json['name'],
-        image: json['image'],
-        basePrice: json['base_price']);
+    if (Category.fromJson(json['category']).name == "Pullover") {
+      return Pullover.fromJson(json);
+    }
+    return Pullover.fromJson(json);
+    //return Product(json['id'], json['name'], json['image'], []);
   }
 
-  String get id {
-    return _id;
-  }
+  double get minPrice;
 
-  String get name {
-    return _name;
-  }
+  List<ProductColor> get colors;
 
-  double get basePrice {
-    return _basePrice;
-  }
+  List<Size> get sizes;
 
-  String get image {
-    return _image;
-  }
+  bool get isColorable => colors.isEmpty;
 
-  List<ProductColor> get colors {
-    return _colors.map((c) => c.property).toList();
-  }
-
-  bool get isColorable {
-    return _colors.isNotEmpty;
-  }
-
-  List<String> get sizes {
-    return _sizes.map((s) => s.property).toList();
-  }
-
-  double getPrice({String? size, ProductColor? color}) {
-    double sizeVariation = size != null
-        ? _sizes
-            .firstWhere((element) => element.property == size)
-            .priceVariation
-        : 0;
-    double colorVariation = color != null
-        ? _colors
-            .firstWhere((element) => element.property == color)
-            .priceVariation
-        : 0;
-    return _basePrice + sizeVariation + colorVariation;
-  }
+  bool get isSizeable => sizes.isEmpty;
 }
