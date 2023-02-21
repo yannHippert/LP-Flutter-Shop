@@ -7,7 +7,7 @@ import 'package:flutter_sweater_shop/Models/variant.dart';
 class ShoppingItem extends Product {
   final String itemId;
   final double price;
-  final quantity = 1;
+  int quantity = 1;
   final ProductColor? productColor;
   final ProductSize? productSize;
 
@@ -34,16 +34,8 @@ class ShoppingItem extends Product {
     ProductSize? productSize =
         json['size'] ? ProductSize.fromJson(json['size']) : null;
 
-    return ShoppingItem(
-      productId,
-      name,
-      image,
-      description,
-      id,
-      price,
-      productColor: productColor,
-      productSize: productSize,
-    );
+    return ShoppingItem(productId, name, image, description, id, price,
+        productColor: productColor, productSize: productSize);
   }
 
   factory ShoppingItem.fromProduct(VariableProduct product,
@@ -61,7 +53,6 @@ class ShoppingItem extends Product {
       productColor: variant.color,
     );
   }
-
   bool get hasColor => productColor != null;
 
   bool get hasSize => productSize != null;

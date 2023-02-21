@@ -1,10 +1,20 @@
-import 'package:flutter_sweater_shop/Exceptions/ApiException.dart';
+import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Models/order.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Utilities/fixtures.dart';
 
 class ApiClient {
+  static Future<void> dummy(dynamic any) async {
+    int statusCode = await Future.delayed(
+      const Duration(seconds: 1),
+      () => 200,
+    );
+    if (statusCode == 200) return;
+
+    throw ApiException(statusCode);
+  }
+
   static Future<bool> autheticate(String email, String password) async {
     int statusCode = await Future.delayed(
       const Duration(seconds: 2),
@@ -48,7 +58,7 @@ class ApiClient {
     throw ApiException(statusCode);
   }
 
-  static Future<bool> addBasketItem(ShoppingItem item, int quantity) async {
+  static Future<bool> addBasketItem(ShoppingItem item) async {
     int statusCode =
         await Future.delayed(const Duration(seconds: 1), () => 200);
     if (statusCode == 200) return true;

@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Utilities/styles.dart';
@@ -22,8 +20,16 @@ class BasketItemCard extends StatelessWidget {
   final oCcy = NumberFormat.simpleCurrency(locale: "fr_EU");
   final ShoppingItem basketItem;
   final Function() onDelete;
+  final Function() onDecrementQuantity;
+  final Function() onIncrementQuantity;
 
-  BasketItemCard({super.key, required this.basketItem, required this.onDelete});
+  BasketItemCard({
+    super.key,
+    required this.basketItem,
+    required this.onDelete,
+    required this.onDecrementQuantity,
+    required this.onIncrementQuantity,
+  });
 
   Widget _buildImage() {
     Color? color = basketItem.hasColor ? basketItem.productColor!.color : null;
@@ -43,29 +49,59 @@ class BasketItemCard extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Row(children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: _buildImage(),
-            ),
-            _hSpacer,
-            Column(
-              children: [
-                Text(basketItem.name),
-                _vSpacer,
-                Text(
-                  oCcy.format(basketItem.price),
-                )
-              ],
-            )
-          ]),
-          _vSpacer,
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ElevatedButton(onPressed: () => {}, child: Text("-")),
-              Text("${basketItem.quantity}"),
-              ElevatedButton(onPressed: () => {}, child: Text("+")),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(6),
+                child: _buildImage(),
+              ),
               _hSpacer,
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _vSpacer,
+                  Text(
+                    basketItem.name,
+                    style: Theme.of(context).textTheme.displayLarge,
+                  ),
+                  _vSpacer,
+                  Text(
+                    oCcy.format(basketItem.price),
+                    style: Theme.of(context).textTheme.displayMedium,
+                  ),
+                ],
+              )
+            ],
+          ),
+          _vSpacer,
+          Wrap(
+            children: [
+              Row(
+                children: [
+                  OutlinedButton(
+                    onPressed: basketItem.quantity == 1
+                        ? onDelete
+                        : onDecrementQuantity,
+                    child: Icon(
+                      basketItem.quantity == 1 ? Icons.delete : Icons.remove,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 15),
+                    child: Text("${basketItem.quantity}"),
+                  ),
+                  OutlinedButton(
+                    onPressed: onIncrementQuantity,
+                    child: Icon(
+                      Icons.add,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ],
+              ),
               ElevatedButton(onPressed: onDelete, child: Text("Delete")),
               _hSpacer,
               ElevatedButton(onPressed: () => {}, child: Text("Save for later"))

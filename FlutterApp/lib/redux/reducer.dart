@@ -1,3 +1,4 @@
+import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Models/user_info.dart';
 import 'package:flutter_sweater_shop/redux/actions/authentication.dart';
@@ -21,16 +22,6 @@ AppState updateProductsReducer(AppState state, dynamic action) {
     );
   }
 
-  if (action is UpdateProductAction) {
-    List<VariableProduct> newProducts = state.products
-        .map((product) => product.id == action.updatedProduct.id
-            ? action.updatedProduct
-            : product)
-        .toList();
-
-    return AppState.fromAppState(state, products: newProducts);
-  }
-
   if (action is AddProductsAction) {
     return AppState.fromAppState(
       state,
@@ -46,18 +37,55 @@ AppState updateProductsReducer(AppState state, dynamic action) {
   }
 
   if (action is AddBasketItemAction) {
+    bool found = false;
+    List<ShoppingItem> newBasket = state.basket.map((e) {
+      if (e.itemId == action.basketItem.itemId) {
+        e.quantity++;
+        found = true;
+      }
+      return e;
+    }).toList();
+
+    if (!found) newBasket = [...state.basket, action.basketItem];
+
     return AppState.fromAppState(
       state,
-      basket: [...state.basket, action.basketItem],
+      basket: newBasket,
+    );
+  }
+
+  if (action is IncrementQuantityAction) {
+    List<ShoppingItem> newBasket = state.basket.map((element) {
+      if (element.itemId == action.itemId) element.quantity++;
+      return element;
+    }).toList();
+
+    return AppState.fromAppState(
+      state,
+      basket: newBasket,
+    );
+  }
+
+  if (action is DecrementQuantityAction) {
+    List<ShoppingItem> newBasket = state.basket.map((element) {
+      if (element.itemId == action.itemId) element.quantity--;
+      return element;
+    }).toList();
+
+    return AppState.fromAppState(
+      state,
+      basket: newBasket,
     );
   }
 
   if (action is DeleteBasketItemAction) {
+    List<ShoppingItem> newBasket = state.basket
+        .where((element) => element.itemId != action.itemId)
+        .toList();
+
     return AppState.fromAppState(
       state,
-      basket: state.basket
-          .where((element) => element.itemId != action.itemId)
-          .toList(),
+      basket: newBasket,
     );
   }
 

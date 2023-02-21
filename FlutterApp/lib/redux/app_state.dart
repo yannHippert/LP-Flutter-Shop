@@ -27,17 +27,27 @@ class AppState {
     List<Order>? orders,
   }) {
     return AppState(
-        userInfo: userInfo ?? oldState.userInfo,
-        products: products ?? oldState.products,
-        favorites: favorites ?? oldState.favorites,
-        orders: orders ?? oldState.orders,
-        basket: basket ?? oldState.basket);
+      userInfo: userInfo ?? oldState.userInfo,
+      products: products ?? oldState.products,
+      favorites: favorites ?? oldState.favorites,
+      orders: orders ?? oldState.orders,
+      basket: basket ?? oldState.basket,
+    );
   }
 
-  AppState.initialState(
-      {this.products = const [],
-      this.userInfo = const UserInfo(),
-      this.favorites = const [],
-      this.orders = const [],
-      this.basket = const []});
+  AppState.initialState({
+    this.products = const [],
+    this.userInfo = const UserInfo(),
+    this.favorites = const [],
+    this.orders = const [],
+    this.basket = const [],
+  });
+
+  double get basketPrice {
+    double value = 0;
+    for (var element in basket) {
+      value += element.price;
+    }
+    return value;
+  }
 }

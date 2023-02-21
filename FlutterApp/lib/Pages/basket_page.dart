@@ -7,7 +7,7 @@ import 'package:flutter_sweater_shop/Widgets/basket_item_card.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_overlay.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
-import 'package:flutter_sweater_shop/Exceptions/ApiException.dart';
+import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/redux/middleware/basket.dart';
 import 'package:redux/redux.dart';
 
@@ -48,6 +48,34 @@ class _BasketPageState extends State<BasketPage> {
     }
   }
 
+  void _onDecrementQuantity(String itemId) async {
+    setState(() => _isActionInProgress = true);
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(decrementQuantity(itemId, completer));
+    try {
+      await completer.future;
+    } on ApiException catch (e) {
+      _onError(e);
+    } finally {
+      setState(() => _isActionInProgress = false);
+    }
+  }
+
+  void _onIncrementQuantity(String itemId) async {
+    setState(() => _isActionInProgress = true);
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(incrementQuantity(itemId, completer));
+    try {
+      await completer.future;
+    } on ApiException catch (e) {
+      _onError(e);
+    } finally {
+      setState(() => _isActionInProgress = false);
+    }
+  }
+
   void _onError(ApiException e) {
     print("Error : $e");
   }
@@ -66,26 +94,45 @@ class _BasketPageState extends State<BasketPage> {
     );
   }
 
+  Widget _buildBasketItems(BuildContext context) {
+    return StoreConnector<AppState, List<ShoppingItem>>(
+      onInit: _fetchBasket,
+      converter: (store) => store.state.basket,
+      builder: (context, List<ShoppingItem> basket) {
+        if (_isLoading) return _buildLoading();
+        if (basket.isEmpty) return _buildNoEntries();
+        return ListView.separated(
+          separatorBuilder: (context, _) => const SizedBox(height: 5),
+          itemCount: basket.length,
+          itemBuilder: (context, index) {
+            var basketItem = basket[index];
+            return BasketItemCard(
+              basketItem: basketItem,
+              onDelete: () => _onDeleteItem(basketItem.itemId),
+              onDecrementQuantity: () =>
+                  _onDecrementQuantity(basketItem.itemId),
+              onIncrementQuantity: () =>
+                  _onIncrementQuantity(basketItem.itemId),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      StoreConnector<AppState, List<ShoppingItem>>(
-          onInit: _fetchBasket,
-          converter: (store) => store.state.basket,
-          builder: (context, List<ShoppingItem> basket) {
-            if (_isLoading) return _buildLoading();
-            if (basket.isEmpty) return _buildNoEntries();
-            return ListView.separated(
-              separatorBuilder: (context, _) => const SizedBox(height: 5),
-              itemCount: basket.length,
-              itemBuilder: (context, index) {
-                var basketItem = basket[index];
-                return BasketItemCard(
-                    basketItem: basketItem,
-                    onDelete: () => _onDeleteItem(basketItem.itemId));
-              },
-            );
-          }),
+      Container(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          children: [
+            Expanded(
+              child: _buildBasketItems(context),
+            ),
+          ],
+        ),
+      ),
       _isActionInProgress ? const LoadingOverlay() : const SizedBox.shrink(),
     ]);
   }

@@ -40,12 +40,19 @@ class _AppState extends State<App> {
               bodyMedium: TextStyle(),
               displayLarge: TextStyle(
                 color: Colors.white,
-                fontSize: 30.0,
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+              ),
+              displayMedium: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
               labelMedium: TextStyle(fontSize: 14),
-              labelLarge:
-                  TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+              labelLarge: TextStyle(
+                fontSize: 16.0,
+                fontWeight: FontWeight.bold,
+              ),
             ).apply(
               bodyColor: Colors.white,
               fontFamily: 'OpenSans',

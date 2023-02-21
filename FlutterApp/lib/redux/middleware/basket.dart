@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_sweater_shop/Exceptions/ApiException.dart';
+import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Utilities/api_client.dart';
 import 'package:flutter_sweater_shop/redux/actions/basket.dart';
@@ -27,8 +27,38 @@ ThunkAction<AppState> addBasketItem(
 ) {
   return (Store<AppState> store) async {
     try {
-      await ApiClient.addBasketItem(item, quantity);
-      store.dispatch(AddBasketItemAction(item, quantity));
+      await ApiClient.addBasketItem(item);
+      store.dispatch(AddBasketItemAction(item));
+      completer.complete();
+    } on ApiException catch (e) {
+      completer.completeError(e);
+    }
+  };
+}
+
+ThunkAction<AppState> incrementQuantity(
+  String itemId,
+  Completer completer,
+) {
+  return (Store<AppState> store) async {
+    try {
+      await ApiClient.dummy(itemId);
+      store.dispatch(IncrementQuantityAction(itemId));
+      completer.complete();
+    } on ApiException catch (e) {
+      completer.completeError(e);
+    }
+  };
+}
+
+ThunkAction<AppState> decrementQuantity(
+  String itemId,
+  Completer completer,
+) {
+  return (Store<AppState> store) async {
+    try {
+      await ApiClient.dummy(itemId);
+      store.dispatch(DecrementQuantityAction(itemId));
       completer.complete();
     } on ApiException catch (e) {
       completer.completeError(e);

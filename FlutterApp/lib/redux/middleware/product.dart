@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_sweater_shop/Exceptions/ApiException.dart';
+import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Utilities/api_client.dart';
 import 'package:flutter_sweater_shop/redux/actions/product.dart';
