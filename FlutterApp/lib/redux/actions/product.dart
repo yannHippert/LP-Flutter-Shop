@@ -1,13 +1,13 @@
-import 'package:flutter_sweater_shop/Models/product.dart';
+import 'package:flutter_sweater_shop/Models/variable_product.dart';
 
 class UpdateProductAction {
-  final Product updatedProduct;
+  final VariableProduct updatedProduct;
 
   UpdateProductAction(this.updatedProduct);
 }
 
 class AddProductsAction {
-  final List<Product> payload;
+  final List<VariableProduct> payload;
 
   AddProductsAction(this.payload);
 }

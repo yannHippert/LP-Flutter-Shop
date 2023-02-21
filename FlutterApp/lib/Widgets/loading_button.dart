@@ -35,7 +35,8 @@ class LoadingButton extends StatelessWidget {
                 child: CircularProgressIndicator(
                   color: Colors.white,
                   strokeWidth: 3,
-                ))
+                ),
+              )
             : Text(
                 label,
                 style: Theme.of(context).textTheme.labelLarge,

@@ -1,52 +1,38 @@
 import 'package:flutter/material.dart';
 
 class ProductColor implements Comparable {
-  final int _id;
-  final String _name;
-  final int _r;
-  final int _g;
-  final int _b;
-  final double _a;
+  final int id;
+  final String name;
+  final int r;
+  final int g;
+  final int b;
+  final double a;
 
-  ProductColor.fromColor({
-    required int id,
-    required String name,
-    required Color color,
-  })  : _id = id,
-        _name = name,
-        _r = color.red,
-        _g = color.green,
-        _b = color.blue,
-        _a = 1;
+  ProductColor(
+      {required this.id,
+      required this.name,
+      required this.r,
+      required this.g,
+      required this.b,
+      this.a = 1});
 
-  ProductColor.fromRGBA(
-      {required int id,
-      required String name,
-      required int r,
-      required int g,
-      required int b,
-      double a = 1})
-      : _id = id,
-        _name = name,
-        _r = r,
-        _g = g,
-        _b = b,
-        _a = a;
+  factory ProductColor.fromJson(Map<String, dynamic> json) {
+    return ProductColor(
+        id: json['id'] as int,
+        name: json['name'],
+        r: json['r'] as int,
+        g: json['g'] as int,
+        b: json['b'] as int);
+  }
 
-  ProductColor.fromJson(Map<String, dynamic> json)
-      : _id = json['id'],
-        _name = json['name'],
-        _r = json['r'],
-        _g = json['g'],
-        _b = json['b'],
-        _a = json['a'] ?? 1;
-
-  int get id => _id;
-
-  String get name => _name;
-
-  Color get color => Color.fromRGBO(_r, _g, _b, _a);
+  Color get color => Color.fromRGBO(r, g, b, a);
 
   @override
-  int compareTo(dynamic other) => _name.compareTo(other.name);
+  bool operator ==(other) => other is ProductColor && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
+
+  @override
+  int compareTo(dynamic other) => (id - other.id) as int;
 }

@@ -43,6 +43,7 @@ class _AppState extends State<App> {
                 fontSize: 30.0,
                 fontWeight: FontWeight.bold,
               ),
+              labelMedium: TextStyle(fontSize: 14),
               labelLarge:
                   TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
             ).apply(

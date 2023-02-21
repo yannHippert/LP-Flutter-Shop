@@ -6,12 +6,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_sweater_shop/Exceptions/ApiException.dart';
 import 'package:flutter_sweater_shop/Models/user_info.dart';
+import 'package:flutter_sweater_shop/Pages/basket_page.dart';
 import 'package:flutter_sweater_shop/Pages/orders_list_page.dart';
 import 'package:flutter_sweater_shop/Pages/products_list_page.dart';
 import 'package:flutter_sweater_shop/Pages/account_page.dart';
+import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
-import 'package:flutter_sweater_shop/redux/middleware.dart';
-import 'package:overlay_support/overlay_support.dart';
+import 'package:flutter_sweater_shop/redux/middleware/authenticate.dart';
 import 'package:redux/redux.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -38,6 +39,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
       "widget": OrderListPage(),
     },
     {
+      "icon": Icons.shopping_cart,
+      "label": "Basket",
+      "widget": BasketPage(),
+    },
+    {
       "icon": Icons.account_circle,
       "label": "Account",
       "widget": AccountPage(),
@@ -47,31 +53,18 @@ class _BottomNavBarState extends State<BottomNavBar> {
   Future<List<String>> _readFromStorage() async {
     String email = await _storage.read(key: "KEY_EMAIL") ?? "";
     String password = await _storage.read(key: "KEY_PASSWORD") ?? "";
-    if (email == "" || password == "") return [];
-    return [email, password];
+    return (email == "" || password == "") ? [] : [email, password];
   }
 
   void _showWelcomeBackMessage() {
-    showSimpleNotification(
-      Row(children: [
-        const Icon(
-          Icons.check,
-          color: Colors.white,
-        ),
-        const SizedBox(width: 10.0),
-        Text(
-          AppLocalizations.of(context)!.welcome_back,
-          style: Theme.of(context).textTheme.labelLarge,
-        ),
-      ]),
-      background: Colors.green,
+    showSuccessNotification(
+      context,
+      AppLocalizations.of(context)!.welcome_back,
     );
   }
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    setState(() => _selectedIndex = index);
   }
 
   List<BottomNavigationBarItem> getNavIcons() {

@@ -1,24 +1,29 @@
 import 'package:flutter_sweater_shop/Models/product_color.dart';
-import 'package:flutter_sweater_shop/Models/size.dart';
+import 'package:flutter_sweater_shop/Models/product_size.dart';
 
 class ProductVariant {
-  final int _id;
-  final double _price;
-  final Size? _size;
-  final ProductColor? _productColor;
+  final String id;
+  final double price;
+  final ProductSize? size;
+  final ProductColor? color;
 
-  ProductVariant(this._id, this._price, this._size, this._productColor);
+  ProductVariant(this.id, this.price, this.size, this.color);
 
-  factory ProductVariant.fromJson(Map<String, dynamic> json) =>
-      ProductVariant(json['id'], json['price'], json['size'], json['color']);
+  factory ProductVariant.fromJson(Map<String, dynamic> json) {
+    ProductSize? productSize =
+        json['size'] != null ? ProductSize.fromJson(json['size']) : null;
+    ProductColor? productColor =
+        json['color'] != null ? ProductColor.fromJson(json['color']) : null;
 
-  int get id => _id;
-
-  double get price => _price;
-
-  Size? get size => _size;
-
-  ProductColor? get color => _productColor;
+    return ProductVariant(
+      json['id'],
+      json['price'] as double,
+      productSize,
+      productColor,
+    );
+  }
 
   bool get hasSize => size != null;
+
+  bool get hasColor => color != null;
 }

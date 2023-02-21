@@ -3,11 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_button.dart';
 import 'package:flutter_sweater_shop/Exceptions/ApiException.dart';
 import 'package:flutter_sweater_shop/Utilities/styles.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
-import 'package:flutter_sweater_shop/redux/middleware.dart';
+import 'package:flutter_sweater_shop/redux/middleware/authenticate.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
@@ -63,9 +64,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _togglePasswordVisbility() {
-    setState(() {
-      _passwordVisible = !_passwordVisible;
-    });
+    setState(() => _passwordVisible = !_passwordVisible);
   }
 
   Future<void> _saveLoginInfo(
@@ -75,35 +74,17 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _showLoginNotification() {
-    showSimpleNotification(
-        Row(children: [
-          const Icon(
-            Icons.check,
-            color: Colors.white,
-          ),
-          const SizedBox(width: 10.0),
-          Text(
-            AppLocalizations.of(context)!.user_loggedin,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-        ]),
-        background: Colors.green);
+    showSuccessNotification(
+      context,
+      AppLocalizations.of(context)!.user_loggedin,
+    );
   }
 
   void _showErrorNotification() {
-    showSimpleNotification(
-        Row(children: [
-          const Icon(
-            Icons.clear,
-            color: Colors.white,
-          ),
-          const SizedBox(width: 10.0),
-          Text(
-            AppLocalizations.of(context)!.err_invalid_login,
-            style: Theme.of(context).textTheme.labelLarge,
-          ),
-        ]),
-        background: Colors.red);
+    showErrorNotification(
+      context,
+      AppLocalizations.of(context)!.err_invalid_login,
+    );
   }
 
   Future<void> _handleLogin() async {
@@ -123,9 +104,9 @@ class _LoginPageState extends State<LoginPage> {
       _showLoginNotification();
     } on ApiException catch (_) {
       _showErrorNotification();
+    } finally {
+      setState(() => _isLoading = false);
     }
-
-    setState(() => _isLoading = false);
   }
 
   Row _buildLabel(String label, String? error) {

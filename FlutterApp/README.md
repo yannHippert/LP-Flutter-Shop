@@ -20,3 +20,9 @@ samples, guidance on mobile development, and a full API reference.
 ```sh
 emulator @Pixel2 -no-snapshot-load
 ```
+
+or
+
+```sh
+emulator @Pixel2 -no-snapshot-load
+```

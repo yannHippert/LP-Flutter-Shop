@@ -1,47 +1,31 @@
-import 'package:flutter_sweater_shop/Models/product.dart';
+import 'package:flutter_sweater_shop/Models/shopping_item.dart';
+import 'package:flutter_sweater_shop/Models/variable_product.dart';
+import 'package:flutter_sweater_shop/Models/variant.dart';
 
 class Order {
-  final String _id;
-  final double _totalPrice;
-  final List<Product> _products;
-  final DateTime _date;
+  final int id;
+  final double totalPrice;
+  final Map<ShoppingItem, int> items;
+  final DateTime date;
 
   Order(
-      {required String id,
-      required double totalPrice,
-      required List<Product> products,
-      required DateTime date})
-      : _id = id,
-        _totalPrice = totalPrice,
-        _products = products,
-        _date = date;
+      {required this.id,
+      required this.totalPrice,
+      required this.items,
+      required this.date});
 
   factory Order.fromJson(Map<String, dynamic> json) {
-    List<Map<String, dynamic>> productsJson = json['image'];
-    List<Product> products = productsJson
-        .map((productJson) => Product.fromJson(productJson))
-        .toList();
+    List<Map<String, dynamic>> itemsJson = json['items'];
+    Map<ShoppingItem, int> orderItems = {};
+    for (var itemJson in itemsJson) {
+      orderItems.putIfAbsent(ShoppingItem.fromJson(itemJson['variant']),
+          () => itemJson["quantity"] as int);
+    }
 
     return Order(
         id: json['id'],
         totalPrice: json['name'],
-        products: products,
+        items: orderItems,
         date: json['base_price']);
-  }
-
-  String get id {
-    return _id;
-  }
-
-  double get totalPrice {
-    return _totalPrice;
-  }
-
-  List<Product> get products {
-    return _products;
-  }
-
-  DateTime get date {
-    return _date;
   }
 }

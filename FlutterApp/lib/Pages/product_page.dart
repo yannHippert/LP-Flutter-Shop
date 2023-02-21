@@ -1,11 +1,24 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:flutter_sweater_shop/Models/product.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_sweater_shop/Exceptions/ApiException.dart';
+import 'package:flutter_sweater_shop/Models/shopping_item.dart';
+import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
+import 'package:flutter_sweater_shop/Models/product_size.dart';
+import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
+import 'package:flutter_sweater_shop/Widgets/loading_overlay.dart';
+import 'package:flutter_sweater_shop/redux/app_state.dart';
+import 'package:flutter_sweater_shop/redux/middleware/basket.dart';
 import 'package:intl/intl.dart';
+import 'dart:math' as math;
+
+import 'package:overlay_support/overlay_support.dart';
 
 class ProductPage extends StatefulWidget {
-  final Product product;
+  final VariableProduct product;
 
   const ProductPage({super.key, required this.product});
 
@@ -15,49 +28,67 @@ class ProductPage extends StatefulWidget {
 
 class _ProductPageState extends State<ProductPage> {
   final oCcy = NumberFormat.simpleCurrency(locale: "fr_EU");
+  bool _isLoading = false;
   ProductColor? _selectedColor;
+  ProductSize? _selectedSize;
 
-  Product get product {
-    return widget.product;
-  }
+  VariableProduct get product => widget.product;
 
   @override
   void initState() {
     super.initState();
 
-    /*if (product.colors.isNotEmpty) {
-      setState(() {
-        _selectedColor = product.colors.elementAt(0);
-      });
-    }*/
+    if (product.isColorable) {
+      setState(() => _selectedColor = product.variants.elementAt(0).color);
+    }
+
+    if (product.isSizeable) {
+      setState(() => _selectedSize = product.variants.elementAt(0).size);
+    }
   }
 
-  Widget _buildImage() {
-    Widget image = Image.network(product.image);
-    if (_selectedColor != null) {
-      return ColorFiltered(
-          colorFilter: ColorFilter.mode(_selectedColor!.color, BlendMode.hue),
-          child: image);
+  void _addToBasket() async {
+    setState(() => _isLoading = true);
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(
+      addBasketItem(
+          ShoppingItem.fromProduct(product, _selectedSize, _selectedColor),
+          1,
+          completer),
+    );
+    try {
+      await completer.future;
+    } on ApiException catch (e) {
+      _onError(e);
+    } finally {
+      setState(() => _isLoading = false);
     }
-    return image;
   }
+
+  void _addToWishlist() async {}
+
+  void _onError(ApiException e) {}
 
   Widget _buildColorSelection() {
     if (product.isColorable) {
       return Wrap(
-        crossAxisAlignment: WrapCrossAlignment.start,
+        spacing: 10,
         children: product.colors
             .map(
-              (color) => ElevatedButton(
+              (color) => OutlinedButton(
                 onPressed: () => setState(() {
                   _selectedColor = color;
                 }),
-                style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(
-                        color == _selectedColor
-                            ? Theme.of(context).colorScheme.primary
-                            : Theme.of(context).colorScheme.secondary)),
-                child: Text(color.name),
+                style: OutlinedButton.styleFrom(
+                    side: _selectedColor == color
+                        ? const BorderSide(width: 3, color: Colors.white)
+                        : null,
+                    backgroundColor: color.color),
+                child: Text(
+                  color.name,
+                  style: const TextStyle(color: Colors.white),
+                ),
               ),
             )
             .toList(),
@@ -66,32 +97,137 @@ class _ProductPageState extends State<ProductPage> {
     return const SizedBox.shrink();
   }
 
+  bool _isPossibleSize(
+    ProductSize? size,
+    ProductColor? color,
+  ) {
+    return product.getVariant(size, color) != null;
+  }
+
+  Widget _buildSizeSelection() {
+    if (product.isSizeable) {
+      return Wrap(
+        spacing: 10,
+        children: product.sizes.map((size) {
+          bool isPossible = _isPossibleSize(size, _selectedColor);
+          return Stack(
+            alignment: AlignmentDirectional.centerStart,
+            children: [
+              SizedBox(
+                width: 60,
+                child: OutlinedButton(
+                  onPressed: isPossible
+                      ? () => setState(() {
+                            _selectedSize = size;
+                          })
+                      : null,
+                  style: OutlinedButton.styleFrom(
+                      side: _selectedSize == size
+                          ? const BorderSide(width: 3, color: Colors.white)
+                          : isPossible
+                              ? null
+                              : const BorderSide(width: 3, color: Colors.red),
+                      backgroundColor: Colors.grey),
+                  child: Text(
+                    size.name,
+                    style: TextStyle(
+                        color: isPossible ? Colors.white : Colors.white54),
+                  ),
+                ),
+              ),
+              isPossible
+                  ? const SizedBox.shrink()
+                  : Transform.rotate(
+                      angle: math.pi / 8,
+                      child: Container(
+                        width: 60,
+                        height: 3,
+                        color: Colors.red,
+                      ),
+                    ),
+            ],
+          );
+        }).toList(),
+      );
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildAddToBasketButton() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ElevatedButton.icon(
+        onPressed: _isPossibleSize(_selectedSize, _selectedColor)
+            ? _addToBasket
+            : null,
+        icon: const Icon(Icons.add_shopping_cart),
+        label: Text(AppLocalizations.of(context)!.add_to_basket),
+      ),
+    );
+  }
+
+  Widget _buildAddToWishlistButton() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ElevatedButton.icon(
+        onPressed: _isPossibleSize(_selectedSize, _selectedColor)
+            ? _addToWishlist
+            : null,
+        icon: const Icon(Icons.star),
+        label: Text(AppLocalizations.of(context)!.add_to_wishlist),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.product),
-      ),
-      body: Container(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(6.0), child: _buildImage()),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  product.name,
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                Text(oCcy.format(product.minPrice))
-              ],
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            title: Text(AppLocalizations.of(context)!.product),
+          ),
+          body: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                children: [
+                  ClipRRect(
+                      borderRadius: BorderRadius.circular(6.0),
+                      child: FilteredImage(
+                        imageUrl: product.image,
+                        width: 200,
+                        height: 200,
+                        color: _selectedColor?.color,
+                      )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        product.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      Text(oCcy.format(
+                          product.getPrice(_selectedSize, _selectedColor))),
+                    ],
+                  ),
+                  _buildSizeSelection(),
+                  _buildColorSelection(),
+                  _buildAddToBasketButton(),
+                  _buildAddToWishlistButton(),
+                  Text(
+                    product.description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ],
+              ),
             ),
-            _buildColorSelection()
-          ],
+          ),
         ),
-      ),
+        _isLoading ? const LoadingOverlay() : const SizedBox.shrink(),
+      ],
     );
   }
 }
