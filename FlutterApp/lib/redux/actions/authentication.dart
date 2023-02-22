@@ -1,7 +1,8 @@
 class LoginAction {
   final String email;
+  final String userId;
 
-  LoginAction(this.email);
+  LoginAction(this.email, this.userId);
 }
 
 class LogoutAction {

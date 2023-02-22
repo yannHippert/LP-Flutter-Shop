@@ -14,8 +14,12 @@ ThunkAction<AppState> authenticate(
 ) {
   return (Store<AppState> store) async {
     try {
-      bool loggedIn = await ApiClient.autheticate(email, password);
-      if (loggedIn) store.dispatch(LoginAction(email));
+      // bool loggedIn = await ApiClient.authenticate(email, password);
+      // if (loggedIn) store.dispatch(LoginAction(email));
+      // completer.complete();
+
+      String token = await ApiClient.authenticate(email, password);
+      if (token.isNotEmpty) store.dispatch(LoginAction(email, token));
       completer.complete();
     } on ApiException catch (e) {
       completer.completeError(e);

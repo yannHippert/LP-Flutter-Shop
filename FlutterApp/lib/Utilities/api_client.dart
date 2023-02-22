@@ -1,8 +1,10 @@
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
+import 'package:flutter_sweater_shop/Exceptions/register_exception.dart';
 import 'package:flutter_sweater_shop/Models/order.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Utilities/fixtures.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ApiClient {
   static Future<void> dummy(dynamic any) async {
@@ -15,14 +17,43 @@ class ApiClient {
     throw ApiException(statusCode);
   }
 
-  static Future<bool> autheticate(String email, String password) async {
-    int statusCode = await Future.delayed(
-      const Duration(seconds: 2),
-      () => email == "sweater@shop.com" && password == "password" ? 200 : 409,
-    );
-    if (statusCode == 200) return true;
+  // static Future<bool> autheticate(String email, String password) async {
+  //   int statusCode = await Future.delayed(
+  //     const Duration(seconds: 2),
+  //     () => email == "sweater@shop.com" && password == "password" ? 200 : 409,
+  //   );
+  //   if (statusCode == 200) return true;
 
-    throw ApiException(statusCode);
+  //   throw ApiException(statusCode);
+  // }
+
+  static Future<String> register(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+      return userCredential.user!.uid;
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'email-already-in-use':
+          throw RegisterException('Email already in use');
+        case 'weak-password':
+          throw RegisterException('Weak password');
+        default:
+          throw RegisterException('Unknown error');
+      }
+    } catch (e) {
+      throw ApiException(500);
+    }
+  }
+
+  static Future<String> authenticate(String email, String password) async {
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      return userCredential.user!.uid;
+    } on Exception catch (_) {
+      throw ApiException(409);
+    }
   }
 
   static Future<bool> logout() async {

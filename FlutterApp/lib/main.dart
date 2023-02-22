@@ -5,11 +5,13 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_sweater_shop/redux/reducer.dart';
 import 'package:overlay_support/overlay_support.dart';
 import 'package:redux_thunk/redux_thunk.dart';
-
 import 'redux/app_state.dart';
 import 'package:redux/redux.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const App());
 }
 
