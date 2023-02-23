@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ProductColor implements Comparable {
-  final int id;
+  final String id;
   final String name;
   final int r;
   final int g;
@@ -18,7 +18,7 @@ class ProductColor implements Comparable {
 
   factory ProductColor.fromJson(Map<String, dynamic> json) {
     return ProductColor(
-        id: json['id'] as int,
+        id: json['id'],
         name: json['name'],
         r: json['r'] as int,
         g: json['g'] as int,
@@ -34,5 +34,11 @@ class ProductColor implements Comparable {
   int get hashCode => id.hashCode;
 
   @override
-  int compareTo(dynamic other) => (id - other.id) as int;
+  //int compareTo(dynamic other) => (id - other.id) as int;
+  int compareTo(other) {
+    if (other is ProductColor) {
+      return name.compareTo(other.name);
+    }
+    return 0;
+  }
 }

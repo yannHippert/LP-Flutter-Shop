@@ -45,6 +45,7 @@ dependencies:
     cupertino_icons: ^1.0.2
     intl: any
     shimmer: ^2.0.0
+    uuid: ^3.0.6
     firebase_core: ^2.7.0
     firebase_auth: ^4.2.9
     cloud_firestore: ^4.4.3

@@ -10,7 +10,7 @@ class VariableProduct extends Product {
       super.id, super.name, super.image, super.description, this.variants);
 
   factory VariableProduct.fromJson(Map<String, dynamic> json) {
-    int id = json['id'] as int;
+    String id = json['id'];
     String name = json['name'];
     String image = json['image'];
     String description = json['description'];

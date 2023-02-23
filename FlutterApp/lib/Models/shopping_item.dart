@@ -23,7 +23,7 @@ class ShoppingItem extends Product {
   });
 
   factory ShoppingItem.fromJson(Map<String, dynamic> json) {
-    int productId = json['productId'] as int;
+    String productId = json['productId'];
     String name = json['name'];
     String image = json['image'];
     String description = json['description'];

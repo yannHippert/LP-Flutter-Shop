@@ -4,7 +4,10 @@ import 'package:flutter_sweater_shop/Models/product_color.dart';
 import 'package:flutter_sweater_shop/Models/product_size.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
+import 'package:uuid/uuid.dart';
 import 'dart:math';
+
+const uuid = Uuid();
 
 Iterable<int> range(int low, int high) sync* {
   for (int i = low; i < high; ++i) {
@@ -55,23 +58,23 @@ Map<String, dynamic> blackJson = {
 };
 var blackColor = ProductColor.fromJson(blackJson);
 
-Map<String, dynamic> xsJson = {"id": 1, "name": "XS"};
+Map<String, dynamic> xsJson = {"id": uuid.v4(), "name": "XS"};
 var xsSize = ProductSize.fromJson(xsJson);
 
-Map<String, dynamic> sJson = {"id": 2, "name": "S"};
+Map<String, dynamic> sJson = {"id": uuid.v4(), "name": "S"};
 var sSize = ProductSize.fromJson(sJson);
 
-Map<String, dynamic> mJson = {"id": 3, "name": "M"};
+Map<String, dynamic> mJson = {"id": uuid.v4(), "name": "M"};
 var mSize = ProductSize.fromJson(mJson);
 
-Map<String, dynamic> lJson = {"id": 4, "name": "L"};
+Map<String, dynamic> lJson = {"id": uuid.v4(), "name": "L"};
 var lSize = ProductSize.fromJson(lJson);
 
-Map<String, dynamic> xlJson = {"id": 5, "name": "XL"};
+Map<String, dynamic> xlJson = {"id": uuid.v4(), "name": "XL"};
 var xlSize = ProductSize.fromJson(xlJson);
 
 Map<String, dynamic> pulloverJson = {
-  "id": 1,
+  "id": uuid.v4(),
   "name": "Ugly sweater",
   "image":
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSlHelq5ROszBU8HOaG6qV_KeWZYkEwI9MEnQ&usqp=CAU",
@@ -87,7 +90,7 @@ Map<String, dynamic> pulloverJson = {
 };
 
 Map<String, dynamic> bonnetJson = {
-  "id": 2,
+  "id": uuid.v4(),
   "name": "Bonnet",
   "image":
       "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRiGS_GuN-9xgH1B9U9HzCkkEa67BTdlpdeOw&usqp=CAU",
@@ -102,7 +105,7 @@ Map<String, dynamic> bonnetJson = {
 };
 
 Map<String, dynamic> gloveJson = {
-  "id": 3,
+  "id": uuid.v4(),
   "name": "Glove",
   "image":
       "https://www.wollwerkstatt.at/media/3e/7e/c9/1649330166/fingerhandschuhe_weinrot.jpg",
