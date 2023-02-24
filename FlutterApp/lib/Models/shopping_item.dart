@@ -30,9 +30,9 @@ class ShoppingItem extends Product {
     String id = json["id"];
     double price = json['price'] as double;
     ProductColor? productColor =
-        json['color'] ? ProductColor.fromJson(json['color']) : null;
+        json['color'] != null ? ProductColor.fromJson(json['color']) : null;
     ProductSize? productSize =
-        json['size'] ? ProductSize.fromJson(json['size']) : null;
+        json['size'] != null ? ProductSize.fromJson(json['size']) : null;
 
     return ShoppingItem(productId, name, image, description, id, price,
         productColor: productColor, productSize: productSize);

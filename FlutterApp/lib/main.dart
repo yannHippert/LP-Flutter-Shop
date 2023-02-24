@@ -8,7 +8,6 @@ import 'package:redux_thunk/redux_thunk.dart';
 import 'redux/app_state.dart';
 import 'package:redux/redux.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_sweater_shop/Utilities/api_client.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

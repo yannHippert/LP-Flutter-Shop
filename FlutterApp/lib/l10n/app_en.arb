@@ -16,6 +16,7 @@
     "add_to_wishlist": "Add to wihslist",
     "added_to_wishlist": "Added item to wihslist",
     "empty_basket": "You haven't added any items to your basket yet",
+    "login_to_shop": "Please login to buy items",
     "no_orders_yet": "You haven't placed an order yet",
     "no_products": "Could not find any products...",
     "req_valid_email": "Please enter a valid email!",

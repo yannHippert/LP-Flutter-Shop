@@ -1,14 +1,11 @@
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Exceptions/register_exception.dart';
-import 'package:flutter_sweater_shop/Models/order.dart' as myOrder;
+import 'package:flutter_sweater_shop/Models/order.dart' as my_order;
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Utilities/fixtures.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_sweater_shop/Models/variant.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_sweater_shop/Models/product_color.dart';
-import 'package:flutter_sweater_shop/Models/product_size.dart';
 import 'package:uuid/uuid.dart';
 
 class ApiClient {
@@ -21,16 +18,6 @@ class ApiClient {
 
     throw ApiException(statusCode);
   }
-
-  // static Future<bool> autheticate(String email, String password) async {
-  //   int statusCode = await Future.delayed(
-  //     const Duration(seconds: 2),
-  //     () => email == "sweater@shop.com" && password == "password" ? 200 : 409,
-  //   );
-  //   if (statusCode == 200) return true;
-
-  //   throw ApiException(statusCode);
-  // }
 
   static Future<void> generateSampleData() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -133,8 +120,11 @@ class ApiClient {
 
   static Future<String> authenticate(String email, String password) async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(email: email, password: password);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
       return userCredential.user!.uid;
     } on Exception catch (_) {
       throw ApiException(409);
@@ -157,61 +147,15 @@ class ApiClient {
       final querySnapshot =
           await firestore.collection('products').limit(maxItems).get();
 
-      final products = querySnapshot.docs.map((doc) {
-        final variants = (doc['variants'] as List).map((variantData) {
-          final colorData = variantData['color'];
-          final sizeData = variantData['size'];
-
-          final color = colorData == null
-              ? null
-              : ProductColor(
-                  id: colorData['id'],
-                  name: colorData['name'],
-                  r: colorData['r'],
-                  g: colorData['g'],
-                  b: colorData['b'],
-                );
-
-          final size = sizeData == null
-              ? null
-              : ProductSize(
-                  id: sizeData['id'],
-                  name: sizeData['name'],
-                );
-
-          return ProductVariant(
-            variantData['id'],
-            variantData['price'],
-            size,
-            color,
-          );
-        }).toList();
-
-        return VariableProduct(
-          doc['id'],
-          doc['name'],
-          doc['image'],
-          doc['description'],
-          variants,
-        );
-      }).toList();
-
-      return products;
+      return querySnapshot.docs
+          .map((doc) => VariableProduct.fromJson(doc.data()))
+          .toList();
     } catch (_) {
       throw ApiException(500);
     }
   }
 
-  // static Future<List<VariableProduct>> fetchProducts(
-  //     {int offset = 0, int limit = 10}) async {
-  //   int statusCode =
-  //       await Future.delayed(const Duration(seconds: 2), () => 200);
-  //   if (statusCode == 200) return getPorudctList(count: limit);
-
-  //   throw ApiException(statusCode);
-  // }
-
-  static Future<List<myOrder.Order>> fetchOrders() async {
+  static Future<List<my_order.Order>> fetchOrders() async {
     int statusCode =
         await Future.delayed(const Duration(seconds: 1), () => 200);
     if (statusCode == 200) return getOrderList();
@@ -229,53 +173,15 @@ class ApiClient {
           .collection('items')
           .get();
 
-      final items = querySnapshot.docs.map((doc) {
-        final data = doc.data();
-
-        final colorData = data['color'] == null
-            ? null
-            : ProductColor(
-                id: data['color']['id'],
-                name: data['color']['name'],
-                r: data['color']['r'],
-                g: data['color']['g'],
-                b: data['color']['b'],
-              );
-
-        final sizeData = data['size'] == null
-            ? null
-            : ProductSize(
-                id: data['size']['id'],
-                name: data['size']['name'],
-              );
-
-        return ShoppingItem(
-          data['id'],
-          data['name'],
-          data['image'],
-          data['description'],
-          data['productId'],
-          data['price'],
-          productColor: colorData,
-          productSize: sizeData,
-        );
-      }).toList();
-
-      return items;
+      return querySnapshot.docs
+          .map((doc) => ShoppingItem.fromJson(doc.data()))
+          .toList();
     } catch (_) {
       throw ApiException(500);
     }
   }
 
-  // static Future<bool> addBasketItem(ShoppingItem item) async {
-  //   int statusCode =
-  //       await Future.delayed(const Duration(seconds: 1), () => 200);
-  //   if (statusCode == 200) return true;
-
-  //   throw ApiException(statusCode);
-  // }
-
-  static Future<bool> addBasketItem(ShoppingItem item) async {
+  static Future<void> addBasketItem(ShoppingItem item) async {
     final firestore = FirebaseFirestore.instance;
 
     try {
@@ -285,8 +191,6 @@ class ApiClient {
           .collection('items')
           .doc(item.id)
           .set(item.toJson());
-
-      return true;
     } catch (_) {
       throw ApiException(500);
     }
@@ -307,12 +211,4 @@ class ApiClient {
       throw ApiException(500);
     }
   }
-
-  // static Future<bool> deleteBasketItem(String itemId) async {
-  //   int statusCode =
-  //       await Future.delayed(const Duration(seconds: 1), () => 200);
-  //   if (statusCode == 200) return true;
-
-  //   throw ApiException(statusCode);
-  // }
 }

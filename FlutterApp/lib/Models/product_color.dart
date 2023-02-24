@@ -34,13 +34,8 @@ class ProductColor implements Comparable {
   int get hashCode => id.hashCode;
 
   @override
-  //int compareTo(dynamic other) => (id - other.id) as int;
-  int compareTo(other) {
-    if (other is ProductColor) {
-      return name.compareTo(other.name);
-    }
-    return 0;
-  }
+  int compareTo(other) =>
+      other is ProductColor ? name.compareTo(other.name) : 0;
 
   Map<String, dynamic> toJson() {
     return {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Models/order.dart';
+import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/Widgets/order_card.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
@@ -33,7 +34,10 @@ class _OrderListPageState extends State<OrderListPage> {
   }
 
   void _onError(ApiException e) {
-    print("Error : $e");
+    showErrorNotification(
+      context,
+      "An error occured while loading the orders!",
+    );
   }
 
   Widget _buildNoEntries() {

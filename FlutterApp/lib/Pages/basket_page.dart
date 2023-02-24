@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
+import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/Widgets/basket_item_card.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_overlay.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
@@ -77,7 +78,10 @@ class _BasketPageState extends State<BasketPage> {
   }
 
   void _onError(ApiException e) {
-    print("Error : $e");
+    showErrorNotification(
+      context,
+      "An error occured while loading the basket!",
+    );
   }
 
   Widget _buildLoading() {
@@ -124,7 +128,7 @@ class _BasketPageState extends State<BasketPage> {
   Widget build(BuildContext context) {
     return Stack(children: [
       Container(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         child: Column(
           children: [
             Expanded(

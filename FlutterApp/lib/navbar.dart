@@ -32,23 +32,37 @@ class _BottomNavBarState extends State<BottomNavBar> {
       "icon": Icons.list,
       "label": "Products",
       "widget": ProductListPage(),
-    },
-    {
-      "icon": Icons.shopping_bag,
-      "label": "Orders",
-      "widget": OrderListPage(),
-    },
-    {
-      "icon": Icons.shopping_cart,
-      "label": "Basket",
-      "widget": BasketPage(),
+      "needsLogin": false
     },
     {
       "icon": Icons.account_circle,
       "label": "Account",
       "widget": AccountPage(),
+      "needsLogin": false
+    },
+    {
+      "icon": Icons.shopping_cart,
+      "label": "Basket",
+      "widget": BasketPage(),
+      "needsLogin": true
+    },
+    {
+      "icon": Icons.shopping_bag,
+      "label": "Orders",
+      "widget": OrderListPage(),
+      "needsLogin": true
     },
   ];
+
+  List<dynamic> _getPages(bool isLoggedIn) {
+    return _pages
+        .where(
+          (element) =>
+              element["needsLogin"] == false ||
+              element["needsLogin"] == isLoggedIn,
+        )
+        .toList();
+  }
 
   Future<List<String>> _readFromStorage() async {
     String email = await _storage.read(key: "KEY_EMAIL") ?? "";
@@ -67,10 +81,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
     setState(() => _selectedIndex = index);
   }
 
-  List<BottomNavigationBarItem> getNavIcons() {
-    return _pages
-        .map((e) =>
-            BottomNavigationBarItem(icon: Icon(e["icon"]), label: e["label"]))
+  List<BottomNavigationBarItem> getNavIcons(bool isLoggedIn) {
+    return _getPages(isLoggedIn)
+        .map((e) => BottomNavigationBarItem(
+              icon: Icon(e["icon"]),
+              label: e["label"],
+            ))
         .toList();
   }
 
@@ -96,28 +112,31 @@ class _BottomNavBarState extends State<BottomNavBar> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_pages.elementAt(_selectedIndex)["label"]),
-        actions: <Widget>[
-          StoreConnector<AppState, UserInfo>(
-              onInit: _checkLogin,
-              converter: (store) => store.state.userInfo,
-              builder: (context, UserInfo vm) => vm.isLoggedIn
-                  ? const Icon(Icons.vpn_key)
-                  : const Icon(Icons.lock)),
-          const SizedBox(width: 16)
-        ],
-      ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages.map<Widget>((e) => e["widget"]).toList(),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: getNavIcons(),
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
+    return StoreConnector<AppState, UserInfo>(
+      onInit: _checkLogin,
+      converter: (store) => store.state.userInfo,
+      builder: (context, UserInfo userInfo) => Scaffold(
+        appBar: AppBar(
+          title: Text(_pages.elementAt(_selectedIndex)["label"]),
+          actions: [
+            userInfo.isLoggedIn
+                ? const Icon(Icons.vpn_key)
+                : const Icon(Icons.lock),
+            const SizedBox(width: 16)
+          ],
+        ),
+        body: IndexedStack(
+          index: _selectedIndex,
+          children: _getPages(userInfo.isLoggedIn)
+              .map<Widget>((e) => e["widget"])
+              .toList(),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: getNavIcons(userInfo.isLoggedIn),
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+        ),
       ),
     );
   }

@@ -1,6 +1,4 @@
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
-import 'package:flutter_sweater_shop/Models/variable_product.dart';
-import 'package:flutter_sweater_shop/Models/variant.dart';
 
 class Order {
   final int id;

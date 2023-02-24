@@ -14,7 +14,7 @@ class VariableProduct extends Product {
     String name = json['name'];
     String image = json['image'];
     String description = json['description'];
-    List<Map<String, dynamic>> variantsJson = json['variants'];
+    List<dynamic> variantsJson = json['variants'];
     List<ProductVariant> variants =
         variantsJson.map((e) => ProductVariant.fromJson(e)).toList();
 

@@ -5,17 +5,17 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
+import 'package:flutter_sweater_shop/Models/user_info.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
 import 'package:flutter_sweater_shop/Models/product_size.dart';
+import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_overlay.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/basket.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
-
-import 'package:overlay_support/overlay_support.dart';
 
 class ProductPage extends StatefulWidget {
   final VariableProduct product;
@@ -68,7 +68,12 @@ class _ProductPageState extends State<ProductPage> {
 
   void _addToWishlist() async {}
 
-  void _onError(ApiException e) {}
+  void _onError(ApiException e) {
+    showErrorNotification(
+      context,
+      "An error occured while connection to the server!",
+    );
+  }
 
   Widget _buildColorSelection() {
     if (product.isColorable) {
@@ -181,6 +186,18 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
+  Widget _buildLoginButton() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: ElevatedButton.icon(
+        onPressed: () => {},
+        icon: const Icon(Icons.login),
+        label: Text(AppLocalizations.of(context)!.login_to_shop),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -215,8 +232,18 @@ class _ProductPageState extends State<ProductPage> {
                   ),
                   _buildSizeSelection(),
                   _buildColorSelection(),
-                  _buildAddToBasketButton(),
-                  _buildAddToWishlistButton(),
+                  StoreConnector<AppState, UserInfo>(
+                      converter: (store) => store.state.userInfo,
+                      builder: (context, UserInfo userInfo) {
+                        return userInfo.isLoggedIn
+                            ? Column(
+                                children: [
+                                  _buildAddToBasketButton(),
+                                  _buildAddToWishlistButton(),
+                                ],
+                              )
+                            : _buildLoginButton();
+                      }),
                   Text(
                     product.description,
                     style: Theme.of(context).textTheme.bodyMedium,
