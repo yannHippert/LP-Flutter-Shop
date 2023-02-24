@@ -56,4 +56,19 @@ class ShoppingItem extends Product {
   bool get hasColor => productColor != null;
 
   bool get hasSize => productSize != null;
+
+  // toJson method is used to convert the object into a Map<String, dynamic>
+
+  Map<String, dynamic> toJson() {
+    return {
+      'productId': id,
+      'name': name,
+      'image': image,
+      'description': description,
+      'id': itemId,
+      'price': price,
+      'color': productColor?.toJson(),
+      'size': productSize?.toJson(),
+    };
+  }
 }

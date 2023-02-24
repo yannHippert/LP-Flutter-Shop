@@ -13,4 +13,11 @@ class ProductSize {
 
   @override
   int get hashCode => id.hashCode;
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+    };
+  }
 }

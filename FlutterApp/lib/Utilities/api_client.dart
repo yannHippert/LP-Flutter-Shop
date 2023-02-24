@@ -10,7 +10,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
 import 'package:flutter_sweater_shop/Models/product_size.dart';
 import 'package:uuid/uuid.dart';
-import 'dart:math';
 
 class ApiClient {
   static Future<void> dummy(dynamic any) async {
@@ -221,26 +220,99 @@ class ApiClient {
   }
 
   static Future<List<ShoppingItem>> fetchBasket() async {
-    int statusCode =
-        await Future.delayed(const Duration(seconds: 1), () => 200);
-    if (statusCode == 200) return getBasketItems();
+    final firestore = FirebaseFirestore.instance;
 
-    throw ApiException(statusCode);
+    try {
+      final querySnapshot = await firestore
+          .collection('basket')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('items')
+          .get();
+
+      final items = querySnapshot.docs.map((doc) {
+        final data = doc.data();
+
+        final colorData = data['color'] == null
+            ? null
+            : ProductColor(
+                id: data['color']['id'],
+                name: data['color']['name'],
+                r: data['color']['r'],
+                g: data['color']['g'],
+                b: data['color']['b'],
+              );
+
+        final sizeData = data['size'] == null
+            ? null
+            : ProductSize(
+                id: data['size']['id'],
+                name: data['size']['name'],
+              );
+
+        return ShoppingItem(
+          data['id'],
+          data['name'],
+          data['image'],
+          data['description'],
+          data['productId'],
+          data['price'],
+          productColor: colorData,
+          productSize: sizeData,
+        );
+      }).toList();
+
+      return items;
+    } catch (_) {
+      throw ApiException(500);
+    }
   }
 
-  static Future<bool> addBasketItem(ShoppingItem item) async {
-    int statusCode =
-        await Future.delayed(const Duration(seconds: 1), () => 200);
-    if (statusCode == 200) return true;
+  // static Future<bool> addBasketItem(ShoppingItem item) async {
+  //   int statusCode =
+  //       await Future.delayed(const Duration(seconds: 1), () => 200);
+  //   if (statusCode == 200) return true;
 
-    throw ApiException(statusCode);
+  //   throw ApiException(statusCode);
+  // }
+
+  static Future<bool> addBasketItem(ShoppingItem item) async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      await firestore
+          .collection('basket')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('items')
+          .doc(item.id)
+          .set(item.toJson());
+
+      return true;
+    } catch (_) {
+      throw ApiException(500);
+    }
   }
 
   static Future<bool> deleteBasketItem(String itemId) async {
-    int statusCode =
-        await Future.delayed(const Duration(seconds: 1), () => 200);
-    if (statusCode == 200) return true;
+    final firestore = FirebaseFirestore.instance;
+    try {
+      await firestore
+          .collection('basket')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('items')
+          .doc(itemId)
+          .delete();
 
-    throw ApiException(statusCode);
+      return true;
+    } catch (_) {
+      throw ApiException(500);
+    }
   }
+
+  // static Future<bool> deleteBasketItem(String itemId) async {
+  //   int statusCode =
+  //       await Future.delayed(const Duration(seconds: 1), () => 200);
+  //   if (statusCode == 200) return true;
+
+  //   throw ApiException(statusCode);
+  // }
 }

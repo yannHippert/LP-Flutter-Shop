@@ -41,4 +41,15 @@ class ProductColor implements Comparable {
     }
     return 0;
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'r': r,
+      'g': g,
+      'b': b,
+      'a': a,
+    };
+  }
 }
