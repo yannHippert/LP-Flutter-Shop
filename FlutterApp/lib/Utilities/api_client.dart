@@ -189,7 +189,7 @@ class ApiClient {
           .collection('basket')
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection('items')
-          .doc(item.id)
+          .doc(uuid.v4())
           .set(item.toJson());
     } catch (_) {
       throw ApiException(500);

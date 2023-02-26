@@ -12,6 +12,12 @@ class AddBasketItemAction {
   AddBasketItemAction(this.basketItem);
 }
 
+class UpdateBasketItemAction {
+  final ShoppingItem item;
+
+  UpdateBasketItemAction(this.item);
+}
+
 class IncrementQuantityAction {
   final String itemId;
 

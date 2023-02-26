@@ -54,6 +54,17 @@ AppState updateProductsReducer(AppState state, dynamic action) {
     );
   }
 
+  if (action is UpdateBasketItemAction) {
+    List<ShoppingItem> newBasket = state.basket
+        .map((e) => e.itemId == action.item.id ? action.item : e)
+        .toList();
+
+    return AppState.fromAppState(
+      state,
+      basket: newBasket,
+    );
+  }
+
   if (action is IncrementQuantityAction) {
     List<ShoppingItem> newBasket = state.basket.map((element) {
       if (element.itemId == action.itemId) element.quantity++;

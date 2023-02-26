@@ -53,6 +53,7 @@ class ShoppingItem extends Product {
       productColor: variant.color,
     );
   }
+
   bool get hasColor => productColor != null;
 
   bool get hasSize => productSize != null;
