@@ -118,6 +118,63 @@ class ApiClient {
     }
   }
 
+  static Future<void> addToWishlist(ShoppingItem item) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) throw ApiException(401);
+
+      await firestore
+          .collection('whislists')
+          .doc(user.uid)
+          .collection('items')
+          .doc(item.id)
+          .set(item.toJson());
+    } catch (e) {
+      throw ApiException(500);
+    }
+  }
+
+  static Future<void> removeFromWishlist(String itemId) async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) throw ApiException(401);
+
+      await firestore
+          .collection('whislists')
+          .doc(user.uid)
+          .collection('items')
+          .doc(itemId)
+          .delete();
+    } catch (e) {
+      throw ApiException(500);
+    }
+  }
+
+  static Future<List<ShoppingItem>> fetchWishlist() async {
+    try {
+      final firestore = FirebaseFirestore.instance;
+      final user = FirebaseAuth.instance.currentUser;
+
+      if (user == null) throw ApiException(401);
+
+      final querySnapshot = await firestore
+          .collection('whislists')
+          .doc(user.uid)
+          .collection('items')
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => ShoppingItem.fromJson(doc.data()))
+          .toList();
+    } catch (e) {
+      throw ApiException(500);
+    }
+  }
+
   static Future<String> authenticate(String email, String password) async {
     try {
       UserCredential userCredential =

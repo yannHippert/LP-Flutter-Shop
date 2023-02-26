@@ -5,6 +5,7 @@ import 'package:flutter_sweater_shop/redux/actions/authentication.dart';
 import 'package:flutter_sweater_shop/redux/actions/basket.dart';
 import 'package:flutter_sweater_shop/redux/actions/order.dart';
 import 'package:flutter_sweater_shop/redux/actions/product.dart';
+import 'package:flutter_sweater_shop/redux/actions/wishlist.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 
 AppState updateProductsReducer(AppState state, dynamic action) {
@@ -33,6 +34,13 @@ AppState updateProductsReducer(AppState state, dynamic action) {
     return AppState.fromAppState(
       state,
       orders: action.payload,
+    );
+  }
+
+  if (action is SetWishlistAction) {
+    return AppState.fromAppState(
+      state,
+      favorites: action.payload,
     );
   }
 

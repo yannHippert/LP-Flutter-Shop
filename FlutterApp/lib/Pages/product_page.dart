@@ -14,6 +14,7 @@ import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_overlay.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/basket.dart';
+import 'package:flutter_sweater_shop/redux/middleware/wishlist.dart';
 import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
@@ -66,7 +67,23 @@ class _ProductPageState extends State<ProductPage> {
     }
   }
 
-  void _addToWishlist() async {}
+  void _addToWishlist() async {
+    setState(() => _isLoading = true);
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(
+      addWishlistItem(
+          ShoppingItem.fromProduct(product, _selectedSize, _selectedColor),
+          completer),
+    );
+    try {
+      await completer.future;
+    } on ApiException catch (e) {
+      _onError(e);
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
 
   void _onError(ApiException e) {
     showErrorNotification(

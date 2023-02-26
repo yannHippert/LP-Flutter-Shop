@@ -9,6 +9,7 @@ import 'package:flutter_sweater_shop/Models/user_info.dart';
 import 'package:flutter_sweater_shop/Pages/basket_page.dart';
 import 'package:flutter_sweater_shop/Pages/orders_list_page.dart';
 import 'package:flutter_sweater_shop/Pages/products_list_page.dart';
+import 'package:flutter_sweater_shop/Pages/wishlist_page.dart';
 import 'package:flutter_sweater_shop/Pages/account_page.dart';
 import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
@@ -39,6 +40,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
       "label": "Account",
       "widget": AccountPage(),
       "needsLogin": false
+    },
+    {
+      "icon": Icons.star,
+      "label": "Wishlist",
+      "widget": WishListPage(),
+      "needsLogin": true
     },
     {
       "icon": Icons.shopping_cart,
