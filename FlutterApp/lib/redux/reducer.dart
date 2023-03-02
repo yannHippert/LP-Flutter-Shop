@@ -44,6 +44,13 @@ AppState updateProductsReducer(AppState state, dynamic action) {
     );
   }
 
+  if (action is SetBasketAction) {
+    return AppState.fromAppState(
+      state,
+      basket: action.payload,
+    );
+  }
+
   if (action is AddBasketItemAction) {
     bool found = false;
     List<ShoppingItem> newBasket = state.basket.map((e) {
@@ -108,5 +115,5 @@ AppState updateProductsReducer(AppState state, dynamic action) {
     );
   }
 
-  return state;
+  throw Exception("$action not implemented!");
 }

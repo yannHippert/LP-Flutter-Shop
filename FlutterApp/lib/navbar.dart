@@ -101,9 +101,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     Completer completer = Completer();
     var loginInfo = await _readFromStorage();
     if (loginInfo.isNotEmpty) {
-      store.dispatch(
-        authenticate(loginInfo[0], loginInfo[1], completer),
-      );
+      store.dispatch(authenticate(loginInfo[0], loginInfo[1], completer));
       try {
         await completer.future;
         _showWelcomeBackMessage();

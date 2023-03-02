@@ -22,13 +22,20 @@ ThunkAction<AppState> fetchBasket(Completer completer) {
 
 ThunkAction<AppState> addBasketItem(
   ShoppingItem item,
-  int quantity,
   Completer completer,
 ) {
   return (Store<AppState> store) async {
     try {
-      await ApiClient.addBasketItem(item);
-      store.dispatch(AddBasketItemAction(item));
+      var items = store.state.basket.where((e) => e.itemId == item.itemId);
+      if (items.isEmpty) {
+        await ApiClient.setBasketItem(item);
+      } else {
+        var storeItem = items.elementAt(0);
+        storeItem.quantity++;
+        await ApiClient.setBasketItem(storeItem);
+      }
+      List<ShoppingItem> basket = await ApiClient.fetchBasket();
+      store.dispatch(SetBasketAction(basket));
       completer.complete();
     } on ApiException catch (e) {
       completer.completeError(e);
@@ -42,8 +49,11 @@ ThunkAction<AppState> incrementQuantity(
 ) {
   return (Store<AppState> store) async {
     try {
-      await ApiClient.dummy(itemId);
-      store.dispatch(IncrementQuantityAction(itemId));
+      var item = store.state.basket.firstWhere((e) => e.itemId == itemId);
+      item.quantity++;
+      await ApiClient.setBasketItem(item);
+      List<ShoppingItem> basket = await ApiClient.fetchBasket();
+      store.dispatch(SetBasketAction(basket));
       completer.complete();
     } on ApiException catch (e) {
       completer.completeError(e);
@@ -57,8 +67,11 @@ ThunkAction<AppState> decrementQuantity(
 ) {
   return (Store<AppState> store) async {
     try {
-      await ApiClient.dummy(itemId);
-      store.dispatch(DecrementQuantityAction(itemId));
+      var item = store.state.basket.firstWhere((e) => e.itemId == itemId);
+      item.quantity--;
+      await ApiClient.setBasketItem(item);
+      List<ShoppingItem> basket = await ApiClient.fetchBasket();
+      store.dispatch(SetBasketAction(basket));
       completer.complete();
     } on ApiException catch (e) {
       completer.completeError(e);

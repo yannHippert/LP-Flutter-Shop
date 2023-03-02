@@ -7,20 +7,13 @@ import 'package:flutter_sweater_shop/Models/variant.dart';
 class ShoppingItem extends Product {
   final String itemId;
   final double price;
-  int quantity = 1;
+  int quantity;
   final ProductColor? productColor;
   final ProductSize? productSize;
 
-  ShoppingItem(
-    super.id,
-    super.name,
-    super.image,
-    super.description,
-    this.itemId,
-    this.price, {
-    this.productColor,
-    this.productSize,
-  });
+  ShoppingItem(super.id, super.name, super.image, super.description,
+      this.itemId, this.price,
+      {this.productColor, this.productSize, this.quantity = 1});
 
   factory ShoppingItem.fromJson(Map<String, dynamic> json) {
     String productId = json['productId'];
@@ -29,13 +22,16 @@ class ShoppingItem extends Product {
     String description = json['description'];
     String id = json["id"];
     double price = json['price'] as double;
+    int quantity = json['quantity'] as int;
     ProductColor? productColor =
         json['color'] != null ? ProductColor.fromJson(json['color']) : null;
     ProductSize? productSize =
         json['size'] != null ? ProductSize.fromJson(json['size']) : null;
 
     return ShoppingItem(productId, name, image, description, id, price,
-        productColor: productColor, productSize: productSize);
+        productColor: productColor,
+        productSize: productSize,
+        quantity: quantity);
   }
 
   factory ShoppingItem.fromProduct(VariableProduct product,
@@ -68,6 +64,7 @@ class ShoppingItem extends Product {
       'description': description,
       'id': itemId,
       'price': price,
+      'quantity': quantity,
       'color': productColor?.toJson(),
       'size': productSize?.toJson(),
     };

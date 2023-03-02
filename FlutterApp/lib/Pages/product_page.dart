@@ -54,8 +54,11 @@ class _ProductPageState extends State<ProductPage> {
     final store = StoreProvider.of<AppState>(context);
     store.dispatch(
       addBasketItem(
-          ShoppingItem.fromProduct(product, _selectedSize, _selectedColor),
-          1,
+          ShoppingItem.fromProduct(
+            product,
+            _selectedSize,
+            _selectedColor,
+          ),
           completer),
     );
     try {

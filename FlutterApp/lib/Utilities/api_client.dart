@@ -182,6 +182,7 @@ class ApiClient {
         email: email,
         password: password,
       );
+      print("[API-CLIENT] Authenticated");
       return userCredential.user!.uid;
     } on Exception catch (_) {
       throw ApiException(409);
@@ -196,18 +197,33 @@ class ApiClient {
     throw ApiException(statusCode);
   }
 
-  static Future<List<VariableProduct>> fetchProducts(
-      {int maxItems = 10}) async {
+  static Query<dynamic>? next;
+
+  static Future<List<VariableProduct>> fetchProducts() async {
+    const limit = 1;
     final firestore = FirebaseFirestore.instance;
-
     try {
-      final querySnapshot =
-          await firestore.collection('products').limit(maxItems).get();
+      final querySnapshot = next == null
+          ? await firestore
+              .collection('products')
+              .orderBy("id")
+              .limit(limit)
+              .get()
+          : await next!.get();
 
-      return querySnapshot.docs
+      var products = querySnapshot.docs
           .map((doc) => VariableProduct.fromJson(doc.data()))
           .toList();
-    } catch (_) {
+
+      if (products.isNotEmpty) {
+        next = firestore
+            .collection('products')
+            .orderBy("id")
+            .startAfter([products.last.id]).limit(limit);
+      }
+
+      return products;
+    } catch (e) {
       throw ApiException(500);
     }
   }
@@ -230,6 +246,8 @@ class ApiClient {
           .collection('items')
           .get();
 
+      print(
+          "[API-CLIENT] Fetched basket ${querySnapshot.docs.length.toString()}");
       return querySnapshot.docs
           .map((doc) => ShoppingItem.fromJson(doc.data()))
           .toList();
@@ -238,7 +256,7 @@ class ApiClient {
     }
   }
 
-  static Future<void> addBasketItem(ShoppingItem item) async {
+  static Future<void> setBasketItem(ShoppingItem item) async {
     final firestore = FirebaseFirestore.instance;
 
     try {
@@ -246,7 +264,7 @@ class ApiClient {
           .collection('basket')
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection('items')
-          .doc(uuid.v4())
+          .doc(item.itemId)
           .set(item.toJson());
     } catch (_) {
       throw ApiException(500);

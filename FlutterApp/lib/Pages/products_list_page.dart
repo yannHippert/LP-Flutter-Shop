@@ -25,6 +25,20 @@ class ProductListPage extends StatefulWidget {
 
 class _ProductsListPageState extends State<ProductListPage> {
   bool _isLoading = true;
+  bool _isLoadingMore = false;
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.atEdge) {
+        bool isBottom = _scrollController.position.pixels != 0;
+        if (isBottom) loadMore();
+      }
+    });
+  }
 
   double get screenWidth {
     return MediaQuery.of(context).size.width - 20;
@@ -49,16 +63,23 @@ class _ProductsListPageState extends State<ProductListPage> {
 
   void _fetchProducts(Store store) async {
     Completer completer = Completer();
-    store.dispatch(
-      fetchProducts(completer),
-    );
+    store.dispatch(fetchProducts(completer));
     try {
       await completer.future;
     } on ApiException catch (e) {
       _onError(e);
     } finally {
-      setState(() => _isLoading = false);
+      setState(() {
+        _isLoading = false;
+        _isLoadingMore = false;
+      });
     }
+  }
+
+  void loadMore() async {
+    setState(() => _isLoadingMore = true);
+    final store = StoreProvider.of<AppState>(context);
+    _fetchProducts(store);
   }
 
   void _onError(ApiException e) {
@@ -75,49 +96,67 @@ class _ProductsListPageState extends State<ProductListPage> {
     );
   }
 
+  Widget _buildGrid(List<Widget> children, bool isSkeleton) {
+    return GridView.count(
+        controller: isSkeleton ? null : _scrollController,
+        physics: isSkeleton
+            ? const NeverScrollableScrollPhysics()
+            : const BouncingScrollPhysics(),
+        padding: const EdgeInsets.all(sidePadding),
+        shrinkWrap: true,
+        crossAxisSpacing: itemGap,
+        mainAxisSpacing: itemGap,
+        crossAxisCount: columnCount,
+        childAspectRatio: 0.83,
+        children: children);
+  }
+
+  Widget _buildContent(List<VariableProduct> products) {
+    if (_isLoading) {
+      return _buildGrid(
+          List.generate(
+              10, (index) => SkeletonProductCard(width: elementWidth)),
+          true);
+    }
+    if (products.isEmpty) return _buildNoEntries();
+    return _buildGrid([
+      ...products
+          .map(
+            (VariableProduct product) => GestureDetector(
+              onTap: () => _onTap(product),
+              child: ProductCard(
+                product: product,
+                width: elementWidth,
+              ),
+            ),
+          )
+          .toList(),
+      ...List.generate(10, (index) => SkeletonProductCard(width: elementWidth)),
+    ], false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, List<VariableProduct>>(
-        onInit: _fetchProducts,
-        converter: (store) => store.state.products,
-        builder: (context, List<VariableProduct> products) {
-          if (_isLoading) {
-            return GridView.count(
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(sidePadding),
-              shrinkWrap: true,
-              crossAxisSpacing: itemGap,
-              mainAxisSpacing: itemGap,
-              crossAxisCount: columnCount,
-              childAspectRatio: 0.83,
-              children: List.generate(
-                10,
-                (index) => SkeletonProductCard(width: elementWidth),
-              ),
-            );
-          }
-          if (products.isEmpty) return _buildNoEntries();
-          return GridView.count(
-              padding: const EdgeInsets.all(sidePadding),
-              shrinkWrap: true,
-              crossAxisSpacing: itemGap,
-              mainAxisSpacing: itemGap,
-              crossAxisCount: columnCount,
-              childAspectRatio: 0.83,
-              children: [
-                SkeletonProductCard(width: elementWidth),
-                ...products
-                    .map(
-                      (VariableProduct product) => GestureDetector(
-                        onTap: () => _onTap(product),
-                        child: ProductCard(
-                          product: product,
-                          width: elementWidth,
-                        ),
-                      ),
-                    )
-                    .toList(),
-              ]);
-        });
+      onInit: _fetchProducts,
+      converter: (store) => store.state.products,
+      builder: (context, List<VariableProduct> products) => Column(
+        children: [
+          Expanded(child: _buildContent(products)),
+          _isLoadingMore
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 3,
+                    ),
+                    Text(AppLocalizations.of(context)!.loading_products)
+                  ],
+                )
+              : const SizedBox.shrink(),
+        ],
+      ),
+    );
   }
 }

@@ -24,5 +24,5 @@ emulator @Pixel2 -no-snapshot-load
 or
 
 ```sh
-emulator @Pixel2 -no-snapshot-load
+emulator -avd Pixel2 -no-snapshot-load
 ```
