@@ -55,7 +55,7 @@ class _WishListPageState extends State<WishListPage> {
               final product = favorites[index];
               return Dismissible(
                 key: UniqueKey(),
-                direction: DismissDirection.endToStart,
+                direction: DismissDirection.horizontal,
                 background: Container(
                   color: Colors.red,
                   child: Row(
@@ -70,24 +70,49 @@ class _WishListPageState extends State<WishListPage> {
                     ],
                   ),
                 ),
+                secondaryBackground: Container(
+                  // Background for swiping right
+                  color: Colors.green,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: const [
+                      SizedBox(width: 20.0),
+                      Icon(
+                        Icons.shopping_cart,
+                        color: Colors.white,
+                        size: 40.0,
+                      ),
+                    ],
+                  ),
+                ),
+                // drag to the left to delete
                 onDismissed: (direction) {
                   setState(() {
                     favorites.removeAt(index);
                   });
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: const Text('Product deleted'),
-                      duration: const Duration(seconds: 2),
-                      action: SnackBarAction(
-                        label: 'UNDO',
-                        onPressed: () {
-                          setState(() {
-                            favorites.insert(index, product);
-                          });
-                        },
+                  if (direction == DismissDirection.startToEnd) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: const Text('Product deleted'),
+                        duration: const Duration(seconds: 2),
+                        action: SnackBarAction(
+                          label: 'UNDO',
+                          onPressed: () {
+                            setState(() {
+                              favorites.insert(index, product);
+                            });
+                          },
+                        ),
                       ),
-                    ),
-                  );
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Product added to cart'),
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 10.0),
