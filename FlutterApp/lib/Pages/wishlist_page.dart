@@ -46,120 +46,131 @@ class _WishListPageState extends State<WishListPage> {
       onInit: _fetchProducts,
       converter: (store) => store.state.favorites,
       builder: (context, favorites) {
-        return Scaffold(
-          body: ListView.builder(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-            itemCount: favorites.length,
-            itemBuilder: (context, index) {
-              final product = favorites[index];
-              return Dismissible(
-                key: UniqueKey(),
-                direction: DismissDirection.horizontal,
-                background: Container(
-                  color: Colors.red,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: const [
-                      Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                        size: 40.0,
-                      ),
-                      SizedBox(width: 20.0),
-                    ],
-                  ),
-                ),
-                secondaryBackground: Container(
-                  // Background for swiping right
-                  color: Colors.green,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: const [
-                      SizedBox(width: 20.0),
-                      Icon(
-                        Icons.shopping_cart,
-                        color: Colors.white,
-                        size: 40.0,
-                      ),
-                    ],
-                  ),
-                ),
-                // drag to the left to delete
-                onDismissed: (direction) {
-                  setState(() {
-                    favorites.removeAt(index);
-                  });
-                  if (direction == DismissDirection.startToEnd) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: const Text('Product deleted'),
-                        duration: const Duration(seconds: 2),
-                        action: SnackBarAction(
-                          label: 'UNDO',
-                          onPressed: () {
-                            setState(() {
-                              favorites.insert(index, product);
-                            });
-                          },
+        if (_isLoading) {
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        }
+        if (favorites.isEmpty) {
+          return const Center(
+            child: Text("No products in your wishlist"),
+          );
+        } else {
+          return Scaffold(
+            body: ListView.builder(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+              itemCount: favorites.length,
+              itemBuilder: (context, index) {
+                final product = favorites[index];
+                return Dismissible(
+                  key: UniqueKey(),
+                  direction: DismissDirection.horizontal,
+                  background: Container(
+                    color: Colors.red,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: const [
+                        Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 40.0,
                         ),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Product added to cart'),
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              product.name,
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            const SizedBox(height: 5.0),
-                            Text(
-                              '\€${product.price.toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
+                        SizedBox(width: 20.0),
+                      ],
+                    ),
+                  ),
+                  secondaryBackground: Container(
+                    // Background for swiping right
+                    color: Colors.green,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: const [
+                        SizedBox(width: 20.0),
+                        Icon(
+                          Icons.shopping_cart,
+                          color: Colors.white,
+                          size: 40.0,
                         ),
-                      ),
-                      const SizedBox(width: 20.0),
-                      SizedBox(
-                        width: 90,
-                        height: 90,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(10.0),
-                          child: Image.network(
-                            product.image,
-                            fit: BoxFit.cover,
+                      ],
+                    ),
+                  ),
+                  // drag to the left to delete
+                  onDismissed: (direction) {
+                    setState(() {
+                      favorites.removeAt(index);
+                    });
+                    if (direction == DismissDirection.startToEnd) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Product deleted'),
+                          duration: const Duration(seconds: 2),
+                          action: SnackBarAction(
+                            label: 'UNDO',
+                            onPressed: () {
+                              setState(() {
+                                favorites.insert(index, product);
+                              });
+                            },
                           ),
                         ),
-                      ),
-                    ],
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Product added to cart'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                product.name,
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5.0),
+                              Text(
+                                '\€${product.price.toStringAsFixed(2)}',
+                                style: const TextStyle(
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 20.0),
+                        SizedBox(
+                          width: 90,
+                          height: 90,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: Image.network(
+                              product.image,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
-          ),
-        );
+                );
+              },
+            ),
+          );
+        }
       },
     );
   }
