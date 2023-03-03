@@ -2,6 +2,7 @@ import 'package:flutter_sweater_shop/Models/order.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Models/user_info.dart';
+import 'package:collection/collection.dart';
 
 class AppState {
   final UserInfo userInfo;
@@ -49,5 +50,9 @@ class AppState {
       value += element.price;
     }
     return value;
+  }
+
+  VariableProduct? getProductById(String id) {
+    return products.firstWhereOrNull((element) => element.id == id);
   }
 }

@@ -11,3 +11,9 @@ class AddWishlistItemAction {
 
   AddWishlistItemAction(this.wishlistItem);
 }
+
+class RemoveWishlistItemAction {
+  final ShoppingItem wishlistItem;
+
+  RemoveWishlistItemAction(this.wishlistItem);
+}

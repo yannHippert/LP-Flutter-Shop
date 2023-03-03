@@ -147,7 +147,7 @@ class _ProductsListPageState extends State<ProductListPage> {
               ? Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircularProgressIndicator(
+                    const CircularProgressIndicator(
                       color: Colors.white,
                       strokeWidth: 3,
                     ),

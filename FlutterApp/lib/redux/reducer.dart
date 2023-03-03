@@ -115,5 +115,34 @@ AppState updateProductsReducer(AppState state, dynamic action) {
     );
   }
 
+  if (action is AddWishlistItemAction) {
+    bool found = false;
+    List<ShoppingItem> newWishlist = state.favorites.map((e) {
+      if (e.itemId == action.wishlistItem.itemId) {
+        e.quantity++;
+        found = true;
+      }
+      return e;
+    }).toList();
+
+    if (!found) newWishlist = [...state.favorites, action.wishlistItem];
+
+    return AppState.fromAppState(
+      state,
+      favorites: newWishlist,
+    );
+  }
+
+  if (action is RemoveWishlistItemAction) {
+    List<ShoppingItem> newWishlist = state.favorites
+        .where((element) => element.itemId != action.wishlistItem.itemId)
+        .toList();
+
+    return AppState.fromAppState(
+      state,
+      favorites: newWishlist,
+    );
+  }
+
   throw Exception("$action not implemented!");
 }

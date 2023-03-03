@@ -3,10 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
+import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/wishlist.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Utilities/notification.dart';
+import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
+import 'product_page.dart';
+import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:redux/redux.dart';
 
 class WishListPage extends StatefulWidget {
@@ -40,6 +44,30 @@ class _WishListPageState extends State<WishListPage> {
     );
   }
 
+  void _navigateToProductPage(String productId, Store<AppState> store) {
+    print("Navigate to product page");
+    print(productId);
+
+    VariableProduct? product = store.state.getProductById(productId);
+    if (product != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductPage(
+            product: product,
+          ),
+        ),
+      );
+    } else {
+      // WIP: Fetch the product from the API
+      // In case the product is not in the store, we should fetch it from the API
+      showErrorNotification(
+        context,
+        "An error occured while loading the product!",
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, List<ShoppingItem>>(
@@ -63,110 +91,111 @@ class _WishListPageState extends State<WishListPage> {
               itemCount: favorites.length,
               itemBuilder: (context, index) {
                 final product = favorites[index];
-                return Dismissible(
-                  key: UniqueKey(),
-                  direction: DismissDirection.horizontal,
-                  background: Container(
-                    color: Colors.red,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: const [
-                        Icon(
-                          Icons.delete,
-                          color: Colors.white,
-                          size: 40.0,
-                        ),
-                        SizedBox(width: 20.0),
-                      ],
-                    ),
-                  ),
-                  secondaryBackground: Container(
-                    // Background for swiping right
-                    color: Colors.green,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: const [
-                        SizedBox(width: 20.0),
-                        Icon(
-                          Icons.shopping_cart,
-                          color: Colors.white,
-                          size: 40.0,
-                        ),
-                      ],
-                    ),
-                  ),
-                  // drag to the left to delete
-                  onDismissed: (direction) {
-                    setState(() {
-                      favorites.removeAt(index);
-                    });
-                    if (direction == DismissDirection.startToEnd) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: const Text('Product deleted'),
-                          duration: const Duration(seconds: 2),
-                          action: SnackBarAction(
-                            label: 'UNDO',
-                            onPressed: () {
-                              setState(() {
-                                favorites.insert(index, product);
-                              });
-                            },
-                          ),
-                        ),
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Product added to cart'),
-                          duration: Duration(seconds: 2),
-                        ),
-                      );
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 10.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                product.name,
-                                style: const TextStyle(
-                                  fontSize: 18.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 5.0),
-                              Text(
-                                '\€${product.price.toStringAsFixed(2)}',
-                                style: const TextStyle(
-                                  fontSize: 20.0,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 20.0),
-                        SizedBox(
-                          width: 90,
-                          height: 90,
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10.0),
-                            child: Image.network(
-                              product.image,
-                              fit: BoxFit.cover,
+                return InkWell(
+                    onTap: () => _navigateToProductPage(
+                        product.id, StoreProvider.of<AppState>(context)),
+                    child: Dismissible(
+                      key: UniqueKey(),
+                      direction: DismissDirection.horizontal,
+                      background: Container(
+                        color: Colors.red,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: const [
+                            Icon(
+                              Icons.delete,
+                              color: Colors.white,
+                              size: 40.0,
                             ),
-                          ),
+                            SizedBox(width: 20.0),
+                          ],
                         ),
-                      ],
-                    ),
-                  ),
-                );
+                      ),
+                      secondaryBackground: Container(
+                        // Background for swiping right
+                        color: Colors.green,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: const [
+                            SizedBox(width: 20.0),
+                            Icon(
+                              Icons.shopping_cart,
+                              color: Colors.white,
+                              size: 40.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                      // drag to the left to delete
+                      onDismissed: (direction) {
+                        setState(() {
+                          favorites.removeAt(index);
+                        });
+                        if (direction == DismissDirection.startToEnd) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: const Text('Product deleted'),
+                              duration: const Duration(seconds: 2),
+                              action: SnackBarAction(
+                                label: 'UNDO',
+                                onPressed: () {
+                                  setState(() {
+                                    favorites.insert(index, product);
+                                  });
+                                },
+                              ),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Product added to cart'),
+                              duration: Duration(seconds: 2),
+                            ),
+                          );
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.only(bottom: 10.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product.name,
+                                    style: const TextStyle(
+                                      fontSize: 18.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 5.0),
+                                  Text(
+                                    '€${product.price.toStringAsFixed(2)}',
+                                    style: const TextStyle(
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 20.0),
+                            SizedBox(
+                              width: 90,
+                              height: 90,
+                              child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  child: FilteredImage(
+                                      imageUrl: product.image,
+                                      color: product.productColor?.color)),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ));
               },
             ),
           );
