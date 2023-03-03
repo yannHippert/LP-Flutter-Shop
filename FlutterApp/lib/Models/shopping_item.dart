@@ -22,7 +22,7 @@ class ShoppingItem extends Product {
     String description = json['description'];
     String id = json["id"];
     double price = json['price'] as double;
-    int quantity = json['quantity'] as int;
+    int quantity = (json['quantity'] ?? 1) as int;
     ProductColor? productColor =
         json['color'] != null ? ProductColor.fromJson(json['color']) : null;
     ProductSize? productSize =
