@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-final currFormatter = NumberFormat.simpleCurrency(locale: "fr_EU");
-
 final dateFormatter = DateFormat("dd/MM/yyyy HH:mm");
+
+final currencyFormatter = NumberFormat.currency(
+  locale: "fr_EU",
+  decimalDigits: 2,
+  symbol: "€",
+);
 
 Widget buildLoadingIndicator({double? iconSize = 48}) {
   return Center(

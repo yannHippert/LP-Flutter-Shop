@@ -19,3 +19,16 @@ ThunkAction<AppState> fetchOrders(Completer completer) {
     }
   };
 }
+
+ThunkAction<AppState> addOrder(Completer completer, Order order) {
+  return (Store<AppState> store) async {
+    try {
+      await ApiClient.addOrder(order);
+      await ApiClient.clearBasket();
+      store.dispatch(AddOrderAction(order));
+      completer.complete();
+    } on ApiException catch (e) {
+      completer.completeError(e);
+    }
+  };
+}

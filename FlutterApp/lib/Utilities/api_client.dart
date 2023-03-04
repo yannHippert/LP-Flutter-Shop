@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Exceptions/register_exception.dart';
-import 'package:flutter_sweater_shop/Models/order.dart' as my_order;
+import 'package:flutter_sweater_shop/Models/order.dart' as ShopOrder;
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Utilities/fixtures.dart';
@@ -183,7 +184,7 @@ class ApiClient {
         email: email,
         password: password,
       );
-      print("[API-CLIENT] Authenticated");
+      if (kDebugMode) print("[API-CLIENT] Authenticated");
       return userCredential.user!.uid;
     } on Exception catch (_) {
       throw ApiException(409);
@@ -239,12 +240,38 @@ class ApiClient {
     }
   }
 
-  static Future<List<my_order.Order>> fetchOrders() async {
-    int statusCode =
-        await Future.delayed(const Duration(seconds: 1), () => 200);
-    if (statusCode == 200) return getOrderList();
+  static Future<List<ShopOrder.Order>> fetchOrders() async {
+    final firestore = FirebaseFirestore.instance;
+    try {
+      final querySnapshot = await firestore
+          .collection('orders')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('details')
+          .orderBy("createdAt", descending: true)
+          .get();
 
-    throw ApiException(statusCode);
+      var orders = querySnapshot.docs
+          .map((doc) => ShopOrder.Order.fromJson(doc.data()))
+          .toList();
+
+      return orders;
+    } catch (_) {
+      throw ApiException(500);
+    }
+  }
+
+  static Future<void> addOrder(ShopOrder.Order order) async {
+    final firestore = FirebaseFirestore.instance;
+    try {
+      await firestore
+          .collection('orders')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection('details')
+          .doc(order.id)
+          .set(order.toJson());
+    } catch (_) {
+      throw ApiException(500);
+    }
   }
 
   static Future<List<ShoppingItem>> fetchBasket() async {
@@ -257,12 +284,14 @@ class ApiClient {
           .collection('items')
           .get();
 
-      print(
-          "[API-CLIENT] Fetched basket ${querySnapshot.docs.length.toString()}");
+      if (kDebugMode) {
+        print(
+            "[API-CLIENT] Fetched basket: ${querySnapshot.docs.length.toString()} items found");
+      }
       return querySnapshot.docs
           .map((doc) => ShoppingItem.fromJson(doc.data()))
           .toList();
-    } catch (_) {
+    } catch (e) {
       throw ApiException(500);
     }
   }
@@ -277,12 +306,16 @@ class ApiClient {
           .collection('items')
           .doc(item.itemId)
           .set(item.toJson());
+
+      if (kDebugMode) {
+        print("[API-CLIENT] Set the basket-item");
+      }
     } catch (_) {
       throw ApiException(500);
     }
   }
 
-  static Future<bool> deleteBasketItem(String itemId) async {
+  static Future<void> deleteBasketItem(String itemId) async {
     final firestore = FirebaseFirestore.instance;
     try {
       await firestore
@@ -291,8 +324,22 @@ class ApiClient {
           .collection('items')
           .doc(itemId)
           .delete();
+    } catch (_) {
+      throw ApiException(500);
+    }
+  }
 
-      return true;
+  static Future<void> clearBasket() async {
+    final firestore = FirebaseFirestore.instance;
+    try {
+      await firestore
+          .collection('basket')
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .delete();
+
+      if (kDebugMode) {
+        print("[API-CLIENT] Cleared basket");
+      }
     } catch (_) {
       throw ApiException(500);
     }

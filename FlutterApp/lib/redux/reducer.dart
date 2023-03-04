@@ -144,5 +144,16 @@ AppState updateProductsReducer(AppState state, dynamic action) {
     );
   }
 
+  if (action is AddOrderAction) {
+    return AppState.fromAppState(
+      state,
+      basket: [],
+      orders: [
+        action.payload,
+        ...state.orders,
+      ],
+    );
+  }
+
   throw Exception("$action not implemented!");
 }

@@ -51,11 +51,11 @@ class _AppState extends State<App> {
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
-              labelMedium: TextStyle(fontSize: 14),
               labelLarge: TextStyle(
-                fontSize: 16.0,
+                fontSize: 20.0,
                 fontWeight: FontWeight.bold,
               ),
+              labelMedium: TextStyle(fontSize: 16),
             ).apply(
               bodyColor: Colors.white,
               fontFamily: 'OpenSans',

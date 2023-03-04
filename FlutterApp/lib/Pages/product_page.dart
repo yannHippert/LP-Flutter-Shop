@@ -9,13 +9,13 @@ import 'package:flutter_sweater_shop/Models/user_info.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
 import 'package:flutter_sweater_shop/Models/product_size.dart';
+import 'package:flutter_sweater_shop/Utilities/constants.dart';
 import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_overlay.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/basket.dart';
 import 'package:flutter_sweater_shop/redux/middleware/wishlist.dart';
-import 'package:intl/intl.dart';
 import 'dart:math' as math;
 
 class ProductPage extends StatefulWidget {
@@ -28,7 +28,6 @@ class ProductPage extends StatefulWidget {
 }
 
 class _ProductPageState extends State<ProductPage> {
-  final oCcy = NumberFormat.simpleCurrency(locale: "fr_EU");
   bool _isLoading = false;
   ProductColor? _selectedColor;
   ProductSize? _selectedSize;
@@ -246,8 +245,10 @@ class _ProductPageState extends State<ProductPage> {
                         product.name,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
-                      Text(oCcy.format(
-                          product.getPrice(_selectedSize, _selectedColor))),
+                      Text(
+                        currencyFormatter.format(
+                            product.getPrice(_selectedSize, _selectedColor)),
+                      ),
                     ],
                   ),
                   _buildSizeSelection(),

@@ -18,9 +18,10 @@ Iterable<int> range(int low, int high) sync* {
 const _chars = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
 Random _rnd = Random();
 
-String getRandomString({int length = 24}) =>
-    String.fromCharCodes(Iterable.generate(
-        length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+String getRandomString({int length = 24}) => String.fromCharCodes(
+      Iterable.generate(
+          length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))),
+    );
 
 Map<String, dynamic> redJson = {
   "id": 1,
@@ -132,7 +133,6 @@ var glove = VariableProduct.fromJson(gloveJson);
 List<VariableProduct> getPorudctList({int count = 10}) {
   List<VariableProduct> products = [];
   for (int _ in range(0, (count / 2).floor())) {
-    //products.add(bonnet);
     products.add(sweater);
     products.add(bonnet);
     products.add(glove);
@@ -140,21 +140,26 @@ List<VariableProduct> getPorudctList({int count = 10}) {
   return products;
 }
 
-Order order = Order(id: 1, totalPrice: 99.99, items: {}, date: DateTime.now());
+Order order = Order(
+  id: uuid.v4(),
+  subtotal: 94.99,
+  shipping: 5,
+  total: 99.99,
+  itemQuantity: 4,
+  items: [],
+  createdAt: DateTime.now(),
+);
 
 List<Order> getOrderList({int count = 10}) {
-  List<Order> orders = [];
-  for (int _ in range(1, count)) {
-    orders.add(order);
-  }
-  return orders;
+  return range(1, count).map((e) => order).toList();
 }
 
 List<ShoppingItem> getBasketItems({int count = 5}) {
-  List<ShoppingItem> basket = [];
-  for (int _ in range(1, 12)) {
-    basket.add(ShoppingItem.fromProduct(
-        sweater, sweater.variants.elementAt(0).size, null));
-  }
-  return basket;
+  return range(1, 12)
+      .map((e) => ShoppingItem.fromProduct(
+            sweater,
+            sweater.variants.elementAt(0).size,
+            null,
+          ))
+      .toList();
 }

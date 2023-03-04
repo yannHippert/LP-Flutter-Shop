@@ -107,7 +107,7 @@ class _ProductsListPageState extends State<ProductListPage> {
         crossAxisSpacing: itemGap,
         mainAxisSpacing: itemGap,
         crossAxisCount: columnCount,
-        childAspectRatio: 0.83,
+        childAspectRatio: 0.80,
         children: children);
   }
 

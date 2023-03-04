@@ -14,9 +14,9 @@ class OrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         child: ListTile(
-            title: Text("${order.id}"),
-            subtitle: Text(dateFormatter.format(order.date)),
-            trailing: Text(currFormatter.format(order.totalPrice))));
+            title: Text(order.id),
+            subtitle: Text(dateFormatter.format(order.createdAt)),
+            trailing: Text(currencyFormatter.format(order.total))));
   }
 }
 

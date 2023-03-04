@@ -5,3 +5,9 @@ class SetOrdersAction {
 
   SetOrdersAction(this.payload);
 }
+
+class AddOrderAction {
+  final Order payload;
+
+  AddOrderAction(this.payload);
+}
