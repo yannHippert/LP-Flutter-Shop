@@ -5,6 +5,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/wishlist.dart';
+import 'package:flutter_sweater_shop/redux/middleware/basket.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
@@ -41,6 +42,24 @@ class _WishListPageState extends State<WishListPage> {
       context,
       "An error occured while loading the products!",
     );
+  }
+
+  void _removeFromWishlist(ShoppingItem item) {
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(removeWishlistItem(item, completer));
+  }
+
+  void _addToWishlist(ShoppingItem item) {
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(addWishlistItem(item, completer));
+  }
+
+  void _addToBasket(ShoppingItem item) {
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(addBasketItem(item, completer));
   }
 
   void _navigateToProductPage(String productId) {
@@ -120,7 +139,7 @@ class _WishListPageState extends State<WishListPage> {
                       // drag to the left to delete
                       onDismissed: (direction) {
                         setState(() {
-                          favorites.removeAt(index);
+                          _removeFromWishlist(product);
                         });
                         if (direction == DismissDirection.startToEnd) {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -131,13 +150,16 @@ class _WishListPageState extends State<WishListPage> {
                                 label: 'UNDO',
                                 onPressed: () {
                                   setState(() {
-                                    favorites.insert(index, product);
+                                    _addToWishlist(product);
                                   });
                                 },
                               ),
                             ),
                           );
                         } else {
+                          setState(() {
+                            _addToBasket(product);
+                          });
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               content: Text('Product added to cart'),

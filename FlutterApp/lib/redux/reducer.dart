@@ -119,7 +119,7 @@ AppState updateProductsReducer(AppState state, dynamic action) {
     bool found = false;
     List<ShoppingItem> newWishlist = state.favorites.map((e) {
       if (e.itemId == action.wishlistItem.itemId) {
-        e.quantity++;
+        e.quantity = 1;
         found = true;
       }
       return e;

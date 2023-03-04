@@ -118,19 +118,38 @@ class ApiClient {
     }
   }
 
-  static Future<void> addToWishlist(ShoppingItem item) async {
+  static Future<void> updateWishlist(List<ShoppingItem> items) async {
     try {
       final firestore = FirebaseFirestore.instance;
       final user = FirebaseAuth.instance.currentUser;
 
       if (user == null) throw ApiException(401);
 
-      await firestore
+      final batch = firestore.batch();
+
+      // Delete existing items
+      final existingItems = await firestore
           .collection('whislists')
           .doc(user.uid)
           .collection('items')
-          .doc(item.id)
-          .set(item.toJson());
+          .get();
+      for (final doc in existingItems.docs) {
+        batch.delete(doc.reference);
+      }
+
+      // Add new items
+      for (final item in items) {
+        batch.set(
+          firestore
+              .collection('whislists')
+              .doc(user.uid)
+              .collection('items')
+              .doc(item.itemId),
+          item.toJson(),
+        );
+      }
+
+      await batch.commit();
     } catch (e) {
       throw ApiException(500);
     }

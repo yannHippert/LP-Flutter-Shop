@@ -25,8 +25,38 @@ ThunkAction<AppState> addWishlistItem(
 ) {
   return (Store<AppState> store) async {
     try {
-      await ApiClient.addToWishlist(item);
       store.dispatch(AddWishlistItemAction(item));
+      ApiClient.updateWishlist(store.state.favorites);
+      completer.complete();
+    } on ApiException catch (e) {
+      completer.completeError(e);
+    }
+  };
+}
+
+ThunkAction<AppState> removeWishlistItem(
+  ShoppingItem item,
+  Completer completer,
+) {
+  return (Store<AppState> store) async {
+    try {
+      store.dispatch(RemoveWishlistItemAction(item));
+      ApiClient.updateWishlist(store.state.favorites);
+      completer.complete();
+    } on ApiException catch (e) {
+      completer.completeError(e);
+    }
+  };
+}
+
+ThunkAction<AppState> updateWishList(
+  List<ShoppingItem> wishlist,
+  Completer completer,
+) {
+  return (Store<AppState> store) async {
+    try {
+      store.dispatch(SetWishlistAction(wishlist));
+      await ApiClient.updateWishlist(wishlist);
       completer.complete();
     } on ApiException catch (e) {
       completer.completeError(e);
