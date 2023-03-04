@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
-import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/wishlist.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
+import 'package:flutter_sweater_shop/Utilities/api_client.dart';
 import 'product_page.dart';
-import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:redux/redux.dart';
 
 class WishListPage extends StatefulWidget {
@@ -44,28 +43,21 @@ class _WishListPageState extends State<WishListPage> {
     );
   }
 
-  void _navigateToProductPage(String productId, Store<AppState> store) {
-    print("Navigate to product page");
-    print(productId);
-
-    VariableProduct? product = store.state.getProductById(productId);
-    if (product != null) {
+  void _navigateToProductPage(String productId) {
+    ApiClient.fetchProduct(productId).then((product) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => ProductPage(
-            product: product,
-          ),
+          builder: (context) => ProductPage(product: product),
         ),
       );
-    } else {
-      // WIP: Fetch the product from the API
-      // In case the product is not in the store, we should fetch it from the API
-      showErrorNotification(
-        context,
-        "An error occured while loading the product!",
+    }).catchError((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("An error occurred while loading the product!"),
+        ),
       );
-    }
+    });
   }
 
   @override
@@ -92,8 +84,7 @@ class _WishListPageState extends State<WishListPage> {
               itemBuilder: (context, index) {
                 final product = favorites[index];
                 return InkWell(
-                    onTap: () => _navigateToProductPage(
-                        product.id, StoreProvider.of<AppState>(context)),
+                    onTap: () => _navigateToProductPage(product.id),
                     child: Dismissible(
                       key: UniqueKey(),
                       direction: DismissDirection.horizontal,

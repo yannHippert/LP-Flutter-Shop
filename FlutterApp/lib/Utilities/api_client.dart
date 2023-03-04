@@ -228,6 +228,16 @@ class ApiClient {
     }
   }
 
+  static Future<VariableProduct> fetchProduct(String id) async {
+    final firestore = FirebaseFirestore.instance;
+    try {
+      final doc = await firestore.collection('products').doc(id).get();
+      return VariableProduct.fromJson(doc.data()!);
+    } catch (e) {
+      throw ApiException(500);
+    }
+  }
+
   static Future<List<my_order.Order>> fetchOrders() async {
     int statusCode =
         await Future.delayed(const Duration(seconds: 1), () => 200);
