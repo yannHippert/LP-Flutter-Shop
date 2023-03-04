@@ -155,24 +155,6 @@ class ApiClient {
     }
   }
 
-  static Future<void> removeFromWishlist(String itemId) async {
-    try {
-      final firestore = FirebaseFirestore.instance;
-      final user = FirebaseAuth.instance.currentUser;
-
-      if (user == null) throw ApiException(401);
-
-      await firestore
-          .collection('whislists')
-          .doc(user.uid)
-          .collection('items')
-          .doc(itemId)
-          .delete();
-    } catch (e) {
-      throw ApiException(500);
-    }
-  }
-
   static Future<List<ShoppingItem>> fetchWishlist() async {
     try {
       final firestore = FirebaseFirestore.instance;
