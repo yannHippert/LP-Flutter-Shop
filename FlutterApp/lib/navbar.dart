@@ -36,6 +36,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
       "needsLogin": false
     },
     {
+      "icon": Icons.account_circle,
+      "label": "Account",
+      "widget": AccountPage(),
+      "needsLogin": false
+    },
+    {
       "icon": Icons.star,
       "label": "Wishlist",
       "widget": WishListPage(),
@@ -52,12 +58,6 @@ class _BottomNavBarState extends State<BottomNavBar> {
       "label": "Orders",
       "widget": OrderListPage(),
       "needsLogin": true
-    },
-    {
-      "icon": Icons.account_circle,
-      "label": "Account",
-      "widget": AccountPage(),
-      "needsLogin": false
     },
   ];
 

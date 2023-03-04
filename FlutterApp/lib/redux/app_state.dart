@@ -7,14 +7,14 @@ import 'package:collection/collection.dart';
 class AppState {
   final UserInfo userInfo;
   final List<VariableProduct> products;
-  final List<ShoppingItem> favorites;
+  final List<ShoppingItem> whishlist;
   final List<ShoppingItem> basket;
   final List<Order> orders;
 
   AppState({
     required this.userInfo,
     required this.products,
-    required this.favorites,
+    required this.whishlist,
     required this.orders,
     required this.basket,
   });
@@ -23,14 +23,14 @@ class AppState {
     AppState oldState, {
     UserInfo? userInfo,
     List<VariableProduct>? products,
-    List<ShoppingItem>? favorites,
+    List<ShoppingItem>? whishlist,
     List<ShoppingItem>? basket,
     List<Order>? orders,
   }) {
     return AppState(
       userInfo: userInfo ?? oldState.userInfo,
       products: products ?? oldState.products,
-      favorites: favorites ?? oldState.favorites,
+      whishlist: whishlist ?? oldState.whishlist,
       orders: orders ?? oldState.orders,
       basket: basket ?? oldState.basket,
     );
@@ -39,7 +39,7 @@ class AppState {
   AppState.initialState({
     this.products = const [],
     this.userInfo = const UserInfo(),
-    this.favorites = const [],
+    this.whishlist = const [],
     this.orders = const [],
     this.basket = const [],
   });

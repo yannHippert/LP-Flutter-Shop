@@ -40,7 +40,7 @@ AppState updateProductsReducer(AppState state, dynamic action) {
   if (action is SetWishlistAction) {
     return AppState.fromAppState(
       state,
-      favorites: action.payload,
+      whishlist: action.payload,
     );
   }
 
@@ -117,7 +117,7 @@ AppState updateProductsReducer(AppState state, dynamic action) {
 
   if (action is AddWishlistItemAction) {
     bool found = false;
-    List<ShoppingItem> newWishlist = state.favorites.map((e) {
+    List<ShoppingItem> newWishlist = state.whishlist.map((e) {
       if (e.itemId == action.wishlistItem.itemId) {
         e.quantity = 1;
         found = true;
@@ -125,22 +125,22 @@ AppState updateProductsReducer(AppState state, dynamic action) {
       return e;
     }).toList();
 
-    if (!found) newWishlist = [...state.favorites, action.wishlistItem];
+    if (!found) newWishlist = [...state.whishlist, action.wishlistItem];
 
     return AppState.fromAppState(
       state,
-      favorites: newWishlist,
+      whishlist: newWishlist,
     );
   }
 
   if (action is RemoveWishlistItemAction) {
-    List<ShoppingItem> newWishlist = state.favorites
+    List<ShoppingItem> newWishlist = state.whishlist
         .where((element) => element.itemId != action.wishlistItem.itemId)
         .toList();
 
     return AppState.fromAppState(
       state,
-      favorites: newWishlist,
+      whishlist: newWishlist,
     );
   }
 
