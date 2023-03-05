@@ -44,56 +44,45 @@ class _WishListPageState extends State<WishListPage> {
     );
   }
 
-  void _removeFromWishlist(ShoppingItem item) {
-    Completer completer = Completer();
-    final store = StoreProvider.of<AppState>(context);
-    store.dispatch(removeWishlistItem(item, completer));
-    completer.future.then(
-      (_) => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Product removed from wishlist'),
-          duration: const Duration(seconds: 2),
-          action: SnackBarAction(
-              label: 'UNDO', onPressed: () => _addToWishlist(item)),
-        ),
-      ),
-    );
+  void _removeFromWishlist(ShoppingItem item, [void Function()? callback]) {
+    setState(() {
+      Completer completer = Completer();
+      final store = StoreProvider.of<AppState>(context);
+      store.dispatch(removeWishlistItem(item, completer));
+      completer.future.then(
+        (_) => callback?.call(),
+      );
+    });
   }
 
-  void _addToWishlist(ShoppingItem item) {
-    Completer completer = Completer();
-    final store = StoreProvider.of<AppState>(context);
-    store.dispatch(addWishlistItem(item, completer));
-    try {
-      completer.future.then(
-        (value) => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Product added to cart'),
-            duration: Duration(seconds: 2),
-          ),
-        ),
-      );
-    } on ApiException catch (e) {
-      _onError(e);
-    }
+  void _addToWishlist(ShoppingItem item, [void Function()? callback]) {
+    setState(() {
+      Completer completer = Completer();
+      final store = StoreProvider.of<AppState>(context);
+      store.dispatch(addWishlistItem(item, completer));
+      try {
+        completer.future.then(
+          (_) => callback?.call(),
+        );
+      } on ApiException catch (e) {
+        _onError(e);
+      }
+    });
   }
 
-  void _addToBasket(ShoppingItem item) {
-    Completer completer = Completer();
-    final store = StoreProvider.of<AppState>(context);
-    store.dispatch(addBasketItem(item, completer));
-    try {
-      completer.future.then(
-        (value) => ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Product added to cart'),
-            duration: Duration(seconds: 2),
-          ),
-        ),
-      );
-    } on ApiException catch (e) {
-      _onError(e);
-    }
+  void _addToBasket(ShoppingItem item, [void Function()? callback]) {
+    setState(() {
+      Completer completer = Completer();
+      final store = StoreProvider.of<AppState>(context);
+      store.dispatch(addBasketItem(item, completer));
+      try {
+        completer.future.then(
+          (value) => callback?.call(),
+        );
+      } on ApiException catch (e) {
+        _onError(e);
+      }
+    });
   }
 
   void _navigateToProductPage(String productId) {
@@ -182,9 +171,30 @@ class _WishListPageState extends State<WishListPage> {
                     // drag to the left to delete
                     onDismissed: (direction) {
                       if (direction == DismissDirection.startToEnd) {
-                        _removeFromWishlist(whishlistItem);
+                        _removeFromWishlist(whishlistItem, () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                  "${whishlistItem.name} removed from wishlist"),
+                              action: SnackBarAction(
+                                label: "UNDO",
+                                onPressed: () {
+                                  _addToWishlist(whishlistItem);
+                                },
+                              ),
+                            ),
+                          );
+                        });
                       } else {
                         _addToBasket(whishlistItem);
+                        _removeFromWishlist(whishlistItem, () {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text("${whishlistItem.name} added to basket"),
+                            ),
+                          );
+                        });
                       }
                     },
                     child: Padding(
