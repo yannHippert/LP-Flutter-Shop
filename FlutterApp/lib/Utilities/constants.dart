@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+const emailKey = "KEY_EMAIL";
+const passwordKey = "KEY_PASSWORD";
+
+const infoMessageDuration = Duration(seconds: 2);
+
 final dateFormatter = DateFormat("dd/MM/yyyy HH:mm");
 
 final currencyFormatter = NumberFormat.currency(

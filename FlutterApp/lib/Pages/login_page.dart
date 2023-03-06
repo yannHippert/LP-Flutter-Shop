@@ -1,15 +1,16 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_sweater_shop/Utilities/notification.dart';
+import 'package:flutter_sweater_shop/Utilities/constants.dart';
+import 'package:flutter_sweater_shop/Utilities/messanger.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_button.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Utilities/styles.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/authenticate.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
 class LoginPage extends StatefulWidget {
@@ -71,27 +72,15 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _passwordVisible = !_passwordVisible);
   }
 
-  Future<void> _saveLoginInfo(
-      {required String email, required String password}) async {
-    await _storage.write(key: "KEY_EMAIL", value: email);
-    await _storage.write(key: "KEY_PASSWORD", value: password);
+  Future<void> _saveLoginInfo({
+    required String email,
+    required String password,
+  }) async {
+    await _storage.write(key: emailKey, value: email);
+    await _storage.write(key: passwordKey, value: password);
   }
 
-  void _showLoginNotification() {
-    showSuccessNotification(
-      context,
-      AppLocalizations.of(context)!.user_loggedin,
-    );
-  }
-
-  void _showErrorNotification() {
-    showErrorNotification(
-      context,
-      AppLocalizations.of(context)!.err_invalid_login,
-    );
-  }
-
-  Future<void> _handleLogin() async {
+  void _handleLogin() {
     String email = _emailController.text.trim();
     String password = _passwordController.text;
 
@@ -99,21 +88,31 @@ class _LoginPageState extends State<LoginPage> {
 
     final store = StoreProvider.of<AppState>(context);
     Completer completer = Completer();
-    store.dispatch(
-      authenticate(email, password, completer),
-    );
-    try {
-      await completer.future;
-      _saveLoginInfo(email: email, password: password);
-      _showLoginNotification();
-    } on ApiException catch (_) {
-      _showErrorNotification();
-    } finally {
-      setState(() => _isLoading = false);
+    store.dispatch(authenticate(email, password, completer));
+    completer.future
+        .then((_) {
+          _saveLoginInfo(email: email, password: password);
+          showScaffoldMessage(
+            context,
+            AppLocalizations.of(context)!.user_loggedin,
+          );
+        })
+        .catchError(_handleError)
+        .whenComplete(() => setState(() => _isLoading = false));
+  }
+
+  void _handleError(Object? error, StackTrace stackTrace) {
+    if (error is ApiException) {
+      showScaffoldMessage(
+        context,
+        AppLocalizations.of(context)!.err_invalid_login,
+      );
+    } else {
+      if (kDebugMode) print(stackTrace.toString());
     }
   }
 
-  Row _buildLabel(String label, String? error) {
+  Widget _buildLabel(String label, String? error) {
     return Row(
       children: [
         Text(

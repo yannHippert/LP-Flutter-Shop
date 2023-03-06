@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:flutter_sweater_shop/Utilities/notification.dart';
+import 'package:flutter_sweater_shop/Utilities/messanger.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/Widgets/product_card.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
@@ -61,32 +62,32 @@ class _ProductsListPageState extends State<ProductListPage> {
     );
   }
 
-  void _fetchProducts(Store store) async {
+  void _fetchProducts(Store store) {
     Completer completer = Completer();
     store.dispatch(fetchProducts(completer));
-    try {
-      await completer.future;
-    } on ApiException catch (e) {
-      _onError(e);
-    } finally {
+    completer.future.onError(_handleError).whenComplete(() {
       setState(() {
         _isLoading = false;
         _isLoadingMore = false;
       });
-    }
+    });
   }
 
-  void loadMore() async {
+  void loadMore() {
     setState(() => _isLoadingMore = true);
     final store = StoreProvider.of<AppState>(context);
     _fetchProducts(store);
   }
 
-  void _onError(ApiException e) {
-    showErrorNotification(
-      context,
-      "An error occured while loading the products!",
-    );
+  void _handleError(Object? error, StackTrace stackTrace) {
+    if (error is ApiException) {
+      showScaffoldMessage(
+        context,
+        AppLocalizations.of(context)!.err_server_connection,
+      );
+    } else {
+      if (kDebugMode) print(stackTrace.toString());
+    }
   }
 
   Widget _buildNoEntries() {

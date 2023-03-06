@@ -11,7 +11,7 @@ ThunkAction<AppState> fetchWishlist(Completer completer) {
   return (Store<AppState> store) async {
     try {
       List<ShoppingItem> wishlist = await ApiClient.fetchWishlist();
-      store.dispatch(SetWishlistAction(wishlist));
+      await store.dispatch(SetWishlistAction(wishlist));
       completer.complete();
     } on ApiException catch (e) {
       completer.completeError(e);
@@ -26,7 +26,7 @@ ThunkAction<AppState> addWishlistItem(
   return (Store<AppState> store) async {
     try {
       store.dispatch(AddWishlistItemAction(item));
-      ApiClient.updateWishlist(store.state.whishlist);
+      await ApiClient.updateWishlist(store.state.whishlist);
       completer.complete();
     } on ApiException catch (e) {
       completer.completeError(e);
@@ -41,7 +41,7 @@ ThunkAction<AppState> removeWishlistItem(
   return (Store<AppState> store) async {
     try {
       store.dispatch(RemoveWishlistItemAction(item));
-      ApiClient.updateWishlist(store.state.whishlist);
+      await ApiClient.updateWishlist(store.state.whishlist);
       completer.complete();
     } on ApiException catch (e) {
       completer.completeError(e);

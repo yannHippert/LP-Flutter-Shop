@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -10,7 +11,7 @@ import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
 import 'package:flutter_sweater_shop/Models/product_size.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
-import 'package:flutter_sweater_shop/Utilities/notification.dart';
+import 'package:flutter_sweater_shop/Utilities/messanger.dart';
 import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_overlay.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
@@ -47,29 +48,25 @@ class _ProductPageState extends State<ProductPage> {
     }
   }
 
-  void _addToBasket() async {
+  void _addToBasket() {
     setState(() => _isLoading = true);
     Completer completer = Completer();
     final store = StoreProvider.of<AppState>(context);
     store.dispatch(
       addBasketItem(
-          ShoppingItem.fromProduct(
-            product,
-            _selectedSize,
-            _selectedColor,
-          ),
+          ShoppingItem.fromProduct(product, _selectedSize, _selectedColor),
           completer),
     );
-    try {
-      await completer.future;
-    } on ApiException catch (e) {
-      _onError(e);
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    completer.future
+        .then((value) => showScaffoldMessage(
+              context,
+              AppLocalizations.of(context)!.added_to_basket,
+            ))
+        .onError(_handleError)
+        .whenComplete(() => setState(() => _isLoading = false));
   }
 
-  void _addToWishlist() async {
+  void _addToWishlist() {
     setState(() => _isLoading = true);
     Completer completer = Completer();
     final store = StoreProvider.of<AppState>(context);
@@ -78,20 +75,24 @@ class _ProductPageState extends State<ProductPage> {
           ShoppingItem.fromProduct(product, _selectedSize, _selectedColor),
           completer),
     );
-    try {
-      await completer.future;
-    } on ApiException catch (e) {
-      _onError(e);
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    completer.future
+        .then((value) => showScaffoldMessage(
+              context,
+              AppLocalizations.of(context)!.added_to_wishlist,
+            ))
+        .onError(_handleError)
+        .whenComplete(() => setState(() => _isLoading = false));
   }
 
-  void _onError(ApiException e) {
-    showErrorNotification(
-      context,
-      "An error occured while connection to the server!",
-    );
+  void _handleError(Object? error, StackTrace stackTrace) {
+    if (error is ApiException) {
+      showScaffoldMessage(
+        context,
+        AppLocalizations.of(context)!.err_server_connection,
+      );
+    } else {
+      if (kDebugMode) print(stackTrace.toString());
+    }
   }
 
   Widget _buildColorSelection() {

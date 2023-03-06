@@ -3,11 +3,10 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/navbar.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_sweater_shop/redux/reducer.dart';
-import 'package:overlay_support/overlay_support.dart';
 import 'package:redux_thunk/redux_thunk.dart';
 import 'redux/app_state.dart';
-import 'package:redux/redux.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:redux/redux.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,41 +30,39 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return StoreProvider(
       store: _store,
-      child: OverlaySupport.global(
-        child: MaterialApp(
-          title: 'Ugly Sweater Shop',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-            brightness: Brightness.dark,
-            textSelectionTheme:
-                TextSelectionThemeData(selectionColor: Colors.blue.shade900),
-            textTheme: const TextTheme(
-              bodyMedium: TextStyle(),
-              displayLarge: TextStyle(
-                color: Colors.white,
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-              ),
-              displayMedium: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-              labelLarge: TextStyle(
-                fontSize: 20.0,
-                fontWeight: FontWeight.bold,
-              ),
-              labelMedium: TextStyle(fontSize: 16),
-            ).apply(
-              bodyColor: Colors.white,
-              fontFamily: 'OpenSans',
+      child: MaterialApp(
+        title: 'Ugly Sweater Shop',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          brightness: Brightness.dark,
+          textSelectionTheme:
+              TextSelectionThemeData(selectionColor: Colors.blue.shade900),
+          textTheme: const TextTheme(
+            bodyMedium: TextStyle(),
+            displayLarge: TextStyle(
+              color: Colors.white,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
             ),
+            displayMedium: TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+            labelLarge: TextStyle(
+              fontSize: 20.0,
+              fontWeight: FontWeight.bold,
+            ),
+            labelMedium: TextStyle(fontSize: 16),
+          ).apply(
+            bodyColor: Colors.white,
+            fontFamily: 'OpenSans',
           ),
-          debugShowCheckedModeBanner: false,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const BottomNavBar(),
         ),
+        debugShowCheckedModeBanner: false,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const BottomNavBar(),
       ),
     );
   }

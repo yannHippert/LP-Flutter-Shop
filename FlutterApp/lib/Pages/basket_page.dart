@@ -1,18 +1,19 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_sweater_shop/Models/order.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Pages/confirm_payment_page.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
-import 'package:flutter_sweater_shop/Utilities/notification.dart';
+import 'package:flutter_sweater_shop/Utilities/messanger.dart';
 import 'package:flutter_sweater_shop/Widgets/basket_item_card.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_overlay.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/redux/middleware/basket.dart';
-import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 
 class BasketPage extends StatefulWidget {
@@ -26,65 +27,53 @@ class _BasketPageState extends State<BasketPage> {
   bool _isLoading = true;
   bool _isActionInProgress = false;
 
-  void _fetchBasket(Store store) async {
+  void _fetchBasket(Store store) {
     Completer completer = Completer();
     store.dispatch(fetchBasket(completer));
-    try {
-      await completer.future;
-    } on ApiException catch (e) {
-      _onError(e);
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    completer.future
+        .onError(_handleError)
+        .whenComplete(() => setState(() => _isLoading = false));
   }
 
-  void _onDeleteItem(String itemId) async {
+  void _onDeleteItem(String itemId) {
     setState(() => _isActionInProgress = true);
     Completer completer = Completer();
     final store = StoreProvider.of<AppState>(context);
     store.dispatch(deleteBasketItem(itemId, completer));
-    try {
-      await completer.future;
-    } on ApiException catch (e) {
-      _onError(e);
-    } finally {
-      setState(() => _isActionInProgress = false);
-    }
+    completer.future
+        .onError(_handleError)
+        .whenComplete(() => setState(() => _isActionInProgress = false));
   }
 
-  void _onDecrementQuantity(String itemId) async {
+  void _onDecrementQuantity(String itemId) {
     setState(() => _isActionInProgress = true);
     Completer completer = Completer();
     final store = StoreProvider.of<AppState>(context);
     store.dispatch(decrementQuantity(itemId, completer));
-    try {
-      await completer.future;
-    } on ApiException catch (e) {
-      _onError(e);
-    } finally {
-      setState(() => _isActionInProgress = false);
-    }
+    completer.future
+        .onError(_handleError)
+        .whenComplete(() => setState(() => _isActionInProgress = false));
   }
 
-  void _onIncrementQuantity(String itemId) async {
+  void _onIncrementQuantity(String itemId) {
     setState(() => _isActionInProgress = true);
     Completer completer = Completer();
     final store = StoreProvider.of<AppState>(context);
     store.dispatch(incrementQuantity(itemId, completer));
-    try {
-      await completer.future;
-    } on ApiException catch (e) {
-      _onError(e);
-    } finally {
-      setState(() => _isActionInProgress = false);
-    }
+    completer.future
+        .onError(_handleError)
+        .whenComplete(() => setState(() => _isActionInProgress = false));
   }
 
-  void _onError(ApiException e) {
-    showErrorNotification(
-      context,
-      "An error occured while loading the basket!",
-    );
+  void _handleError(Object? error, StackTrace stackTrace) {
+    if (error is ApiException) {
+      showScaffoldMessage(
+        context,
+        AppLocalizations.of(context)!.err_loading_basket,
+      );
+    } else {
+      if (kDebugMode) print(stackTrace.toString());
+    }
   }
 
   void _onCheckout() {
@@ -93,6 +82,7 @@ class _BasketPageState extends State<BasketPage> {
     );
   }
 
+  // TODO: loading page
   Widget _buildLoading() {
     return ListView.builder(
       itemCount: 5,
@@ -109,23 +99,18 @@ class _BasketPageState extends State<BasketPage> {
 
   Widget _buildCheckout(List<ShoppingItem> basket) {
     if (_isLoading || basket.isEmpty) return const SizedBox.shrink();
-    double price = 0;
-    int itemQuantity = 0;
-    for (var item in basket) {
-      price += item.price * item.quantity;
-      itemQuantity += item.quantity;
-    }
+    Order order = Order.fromBasket(basket);
 
     return Column(
       children: [
         Text(
-          "${AppLocalizations.of(context)!.subtotal} ${currencyFormatter.format(price)}",
+          "${AppLocalizations.of(context)!.subtotal} ${currencyFormatter.format(order.subtotal)}",
           style: Theme.of(context).textTheme.displayMedium,
         ),
         ElevatedButton(
           onPressed: _onCheckout,
           child: Text(
-            AppLocalizations.of(context)!.checkout_proceed(itemQuantity),
+            AppLocalizations.of(context)!.checkout_proceed(order.itemQuantity),
           ),
         )
       ],

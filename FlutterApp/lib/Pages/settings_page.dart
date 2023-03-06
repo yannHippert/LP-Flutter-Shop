@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_sweater_shop/Utilities/constants.dart';
+import 'package:flutter_sweater_shop/Utilities/messanger.dart';
 import 'package:flutter_sweater_shop/redux/actions/authentication.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:settings_ui/settings_ui.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -10,10 +13,15 @@ class SettingsPage extends StatelessWidget {
 
   const SettingsPage({super.key});
 
-  void _onLogout(BuildContext context) async {
+  void _onLogout(BuildContext context) {
     StoreProvider.of<AppState>(context).dispatch(LogoutAction());
-    await _storage.delete(key: "KEY_EMAIL");
-    await _storage.delete(key: "KEY_PASSWORD");
+    Future.wait([
+      _storage.delete(key: emailKey),
+      _storage.delete(key: passwordKey),
+    ]).then(
+      (_) => showScaffoldMessage(
+          context, AppLocalizations.of(context)!.user_loggedout),
+    );
   }
 
   @override
@@ -21,21 +29,24 @@ class SettingsPage extends StatelessWidget {
     return SettingsList(
       sections: [
         SettingsSection(
-          title: Text('Common'),
+          title: Text(AppLocalizations.of(context)!.common),
           tiles: <SettingsTile>[
             SettingsTile.navigation(
-              leading: Icon(Icons.language),
-              title: Text('Language'),
+              leading: const Icon(Icons.language),
+              title: Text(AppLocalizations.of(context)!.language),
               value: Text('English'),
               onPressed: (context) => print("Pressed"),
             ),
           ],
         ),
-        SettingsSection(title: Text("Account"), tiles: <SettingsTile>[
-          SettingsTile(
-              title: Text("Logout", textAlign: TextAlign.center),
-              onPressed: _onLogout)
-        ]),
+        SettingsSection(
+            title: Text(AppLocalizations.of(context)!.account),
+            tiles: <SettingsTile>[
+              SettingsTile(
+                  title: Text(AppLocalizations.of(context)!.logout,
+                      textAlign: TextAlign.center),
+                  onPressed: _onLogout)
+            ]),
       ],
     );
   }

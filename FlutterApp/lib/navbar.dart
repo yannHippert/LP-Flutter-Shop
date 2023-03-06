@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -11,7 +12,8 @@ import 'package:flutter_sweater_shop/Pages/orders_list_page.dart';
 import 'package:flutter_sweater_shop/Pages/products_list_page.dart';
 import 'package:flutter_sweater_shop/Pages/wishlist_page.dart';
 import 'package:flutter_sweater_shop/Pages/account_page.dart';
-import 'package:flutter_sweater_shop/Utilities/notification.dart';
+import 'package:flutter_sweater_shop/Utilities/constants.dart';
+import 'package:flutter_sweater_shop/Utilities/messanger.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/authenticate.dart';
 import 'package:redux/redux.dart';
@@ -65,8 +67,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
     return _pages
         .where(
           (element) =>
-              element["needsLogin"] == false ||
-              element["needsLogin"] == isLoggedIn,
+              !element["needsLogin"] || element["needsLogin"] == isLoggedIn,
         )
         .toList();
   }
@@ -78,9 +79,11 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 
   void _showWelcomeBackMessage() {
-    showSuccessNotification(
-      context,
-      AppLocalizations.of(context)!.welcome_back,
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.welcome_back),
+        duration: infoMessageDuration,
+      ),
     );
   }
 
@@ -102,17 +105,19 @@ class _BottomNavBarState extends State<BottomNavBar> {
     var loginInfo = await _readFromStorage();
     if (loginInfo.isNotEmpty) {
       store.dispatch(authenticate(loginInfo[0], loginInfo[1], completer));
-      try {
-        await completer.future;
-        _showWelcomeBackMessage();
-      } on ApiException catch (e) {
-        onError(e);
-      }
+      completer.future
+          .then((value) => _showWelcomeBackMessage())
+          .catchError(_handleError);
     }
   }
 
-  void onError(e) {
-    print(e);
+  void _handleError(Object? error, StackTrace stackTrace) {
+    if (error is ApiException) {
+      showScaffoldMessage(
+          context, AppLocalizations.of(context)!.err_server_connection);
+    } else {
+      if (kDebugMode) print(stackTrace.toString());
+    }
   }
 
   @override

@@ -1,10 +1,11 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Models/order.dart';
 import 'package:flutter_sweater_shop/Pages/order_page.dart';
-import 'package:flutter_sweater_shop/Utilities/notification.dart';
+import 'package:flutter_sweater_shop/Utilities/messanger.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/Widgets/order_card.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
@@ -22,23 +23,23 @@ class OrderListPage extends StatefulWidget {
 class _OrderListPageState extends State<OrderListPage> {
   bool _isLoading = true;
 
-  void _fetchOrders(Store store) async {
+  void _fetchOrders(Store store) {
     Completer completer = Completer();
     store.dispatch(fetchOrders(completer));
-    try {
-      await completer.future;
-    } on ApiException catch (e) {
-      _onError(e);
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    completer.future
+        .onError(_handleError)
+        .whenComplete(() => setState(() => _isLoading = false));
   }
 
-  void _onError(ApiException e) {
-    showErrorNotification(
-      context,
-      "An error occured while loading the orders!",
-    );
+  void _handleError(Object? error, StackTrace stackTrace) {
+    if (error is ApiException) {
+      showScaffoldMessage(
+        context,
+        AppLocalizations.of(context)!.err_loading_basket,
+      );
+    } else {
+      if (kDebugMode) print(stackTrace.toString());
+    }
   }
 
   void _onTap(Order order) {
