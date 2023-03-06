@@ -169,37 +169,35 @@ class _WishListPageState extends State<WishListPage> {
               text: AppLocalizations.of(context)!.empty_wishlist,
             );
           }
-          return Scaffold(
-            body: ListView.builder(
-              itemCount: whishlist.length,
-              itemBuilder: (context, index) {
-                final wishlistItem = whishlist[index];
-                return InkWell(
-                  onTap: () => _navigateToProductPage(wishlistItem.id),
-                  child: Dismissible(
-                      key: UniqueKey(),
-                      direction: DismissDirection.horizontal,
-                      background: _buildDissmissibleContainer(
-                          backgroundColor: Colors.red,
-                          iconData: Icons.delete,
-                          text: AppLocalizations.of(context)!
-                              .remove_from_wishlist),
-                      secondaryBackground: _buildDissmissibleContainer(
-                          backgroundColor: Colors.blue,
-                          iconData: Icons.shopping_cart,
-                          text: AppLocalizations.of(context)!.add_to_basket,
-                          isLeft: false),
-                      onDismissed: (direction) {
-                        if (direction == DismissDirection.startToEnd) {
-                          _removeFromWishlist(wishlistItem, showUndo: true);
-                        } else {
-                          _moveToBasket(wishlistItem);
-                        }
-                      },
-                      child: WishlistItemCard(wishlistItem)),
-                );
-              },
-            ),
+          return ListView.builder(
+            itemCount: whishlist.length,
+            itemBuilder: (context, index) {
+              final wishlistItem = whishlist[index];
+              return InkWell(
+                onTap: () => _navigateToProductPage(wishlistItem.id),
+                child: Dismissible(
+                    key: UniqueKey(),
+                    direction: DismissDirection.horizontal,
+                    background: _buildDissmissibleContainer(
+                        backgroundColor: Colors.red,
+                        iconData: Icons.delete,
+                        text:
+                            AppLocalizations.of(context)!.remove_from_wishlist),
+                    secondaryBackground: _buildDissmissibleContainer(
+                        backgroundColor: Colors.blue,
+                        iconData: Icons.shopping_cart,
+                        text: AppLocalizations.of(context)!.add_to_basket,
+                        isLeft: false),
+                    onDismissed: (direction) {
+                      if (direction == DismissDirection.startToEnd) {
+                        _removeFromWishlist(wishlistItem, showUndo: true);
+                      } else {
+                        _moveToBasket(wishlistItem);
+                      }
+                    },
+                    child: WishlistItemCard(wishlistItem)),
+              );
+            },
           );
         },
       ),

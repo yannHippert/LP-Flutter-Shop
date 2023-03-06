@@ -58,11 +58,34 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
     ]);
   }
 
+  Widget _buildItemListing(ShoppingItem item) {
+    var itemProperties = [];
+    if (item.hasColor) itemProperties.add(item.productColor!.name);
+    if (item.hasSize) itemProperties.add(item.productSize!.name);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSpacedText("${item.quantity} x ${item.name}",
+            currencyFormatter.format(item.price * item.quantity)),
+        Text(itemProperties.join(", "))
+      ],
+    );
+  }
+
   Widget _buildContent(List<ShoppingItem> basket) {
     var order = Order.fromBasket(basket);
 
     return Column(
       children: [
+        Flexible(
+          child: ListView.separated(
+              physics: const BouncingScrollPhysics(),
+              itemCount: basket.length,
+              separatorBuilder: (_, index) => const SizedBox(height: 5),
+              itemBuilder: (context, index) =>
+                  _buildItemListing(basket[index])),
+        ),
         const Divider(color: Colors.white),
         _buildSpacedText(AppLocalizations.of(context)!.subtotal,
             currencyFormatter.format(order.subtotal)),
@@ -71,9 +94,11 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
         const Divider(color: Colors.white),
         _buildSpacedText(AppLocalizations.of(context)!.total,
             currencyFormatter.format(order.total)),
+        const SizedBox(height: 20),
         ElevatedButton(
             onPressed: () => _confirmPayment(order),
-            child: Text(AppLocalizations.of(context)!.confirm_payment))
+            child: Text(AppLocalizations.of(context)!.confirm_payment)),
+        const SizedBox(height: 20),
       ],
     );
   }

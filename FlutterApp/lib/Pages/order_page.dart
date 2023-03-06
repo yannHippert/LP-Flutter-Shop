@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_sweater_shop/Models/order.dart';
+import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
 
 class OrderPage extends StatelessWidget {
@@ -23,6 +24,22 @@ class OrderPage extends StatelessWidget {
     ]);
   }
 
+  Widget _buildItemListing(BuildContext context, ShoppingItem item) {
+    var itemProperties = [];
+    if (item.hasColor) itemProperties.add(item.productColor!.name);
+    if (item.hasSize) itemProperties.add(item.productSize!.name);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildSpacedText(context, "${item.quantity} x ${item.name}",
+            currencyFormatter.format(item.price * item.quantity)),
+        Text(itemProperties.join(", ")),
+        const SizedBox(height: 5)
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,9 +51,14 @@ class OrderPage extends StatelessWidget {
           padding: const EdgeInsets.all(10),
           child: Column(
             children: [
-              _buildSpacedTextSmall(context, "Order-id:", order.id),
+              _buildSpacedTextSmall(context, "", order.id),
               _buildSpacedText(
                   context, "Created:", dateFormatter.format(order.createdAt)),
+              const Divider(color: Colors.white),
+              ...List<Widget>.generate(
+                order.items.length,
+                (int index) => _buildItemListing(context, order.items[index]),
+              ),
               const Divider(color: Colors.white),
               _buildSpacedText(context, AppLocalizations.of(context)!.subtotal,
                   currencyFormatter.format(order.subtotal)),

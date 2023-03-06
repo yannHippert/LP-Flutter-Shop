@@ -138,20 +138,22 @@ class _BasketPageState extends State<BasketPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
-      Container(
-          padding: const EdgeInsets.all(10),
-          child: StoreConnector<AppState, List<ShoppingItem>>(
-            onInit: _fetchBasket,
-            converter: (store) => store.state.basket,
-            builder: (context, List<ShoppingItem> basket) => Column(
-              children: [
-                _buildCheckout(basket),
-                Expanded(child: _buildBasketItems(basket))
-              ],
-            ),
-          )),
-      _isActionInProgress ? const LoadingOverlay() : const SizedBox.shrink(),
-    ]);
+    return Stack(
+      children: [
+        Container(
+            padding: const EdgeInsets.all(10),
+            child: StoreConnector<AppState, List<ShoppingItem>>(
+              onInit: _fetchBasket,
+              converter: (store) => store.state.basket,
+              builder: (context, List<ShoppingItem> basket) => Column(
+                children: [
+                  _buildCheckout(basket),
+                  Expanded(child: _buildBasketItems(basket))
+                ],
+              ),
+            )),
+        _isActionInProgress ? const LoadingOverlay() : const SizedBox.shrink(),
+      ],
+    );
   }
 }

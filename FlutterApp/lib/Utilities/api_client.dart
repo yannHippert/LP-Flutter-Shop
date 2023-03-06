@@ -282,6 +282,7 @@ class ApiClient {
           .collection('basket')
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection('items')
+          .orderBy("productId")
           .get();
 
       if (kDebugMode) {
