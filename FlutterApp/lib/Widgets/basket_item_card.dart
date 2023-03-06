@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
+import 'package:flutter_sweater_shop/Utilities/constants.dart';
 import 'package:flutter_sweater_shop/Utilities/styles.dart';
 import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 const _containerPadding = EdgeInsets.symmetric(horizontal: 12, vertical: 10);
 
@@ -17,7 +18,6 @@ const _hSpacer = SizedBox(width: 5);
 const _vSpacer = SizedBox(height: 5);
 
 class BasketItemCard extends StatelessWidget {
-  final oCcy = NumberFormat.simpleCurrency(locale: "fr_EU");
   final ShoppingItem basketItem;
   final Function() onDelete;
   final Function() onDecrementQuantity;
@@ -36,8 +36,8 @@ class BasketItemCard extends StatelessWidget {
     return FilteredImage(
       imageUrl: basketItem.image,
       color: color,
-      width: 175,
-      height: 175,
+      width: 140,
+      height: 140,
     );
   }
 
@@ -68,7 +68,7 @@ class BasketItemCard extends StatelessWidget {
                   ),
                   _vSpacer,
                   Text(
-                    oCcy.format(basketItem.price),
+                    currencyFormatter.format(basketItem.price),
                     style: Theme.of(context).textTheme.displayMedium,
                   ),
                 ],
@@ -102,9 +102,13 @@ class BasketItemCard extends StatelessWidget {
                   ),
                 ],
               ),
-              ElevatedButton(onPressed: onDelete, child: Text("Delete")),
+              ElevatedButton(
+                  onPressed: onDelete,
+                  child: Text(AppLocalizations.of(context)!.delete)),
               _hSpacer,
-              ElevatedButton(onPressed: () => {}, child: Text("Save for later"))
+              ElevatedButton(
+                  onPressed: () => {},
+                  child: Text(AppLocalizations.of(context)!.move_to_wishlist))
             ],
           )
         ],
