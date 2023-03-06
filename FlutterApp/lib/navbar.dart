@@ -13,7 +13,7 @@ import 'package:flutter_sweater_shop/Pages/products_list_page.dart';
 import 'package:flutter_sweater_shop/Pages/wishlist_page.dart';
 import 'package:flutter_sweater_shop/Pages/account_page.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
-import 'package:flutter_sweater_shop/Utilities/messanger.dart';
+import 'package:flutter_sweater_shop/Utilities/messenger.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/authenticate.dart';
 import 'package:redux/redux.dart';

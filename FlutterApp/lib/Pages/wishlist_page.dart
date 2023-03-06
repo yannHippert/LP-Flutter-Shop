@@ -1,15 +1,17 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
+import 'package:flutter_sweater_shop/Utilities/messenger.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/wishlist.dart';
 import 'package:flutter_sweater_shop/redux/middleware/basket.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
-import 'package:flutter_sweater_shop/Utilities/notification.dart';
 import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
 import 'package:flutter_sweater_shop/Utilities/api_client.dart';
 import 'product_page.dart';
@@ -24,65 +26,56 @@ class WishListPage extends StatefulWidget {
 
 class _WishListPageState extends State<WishListPage> {
   bool _isLoading = true;
+  bool _isActionInProgress = false;
 
   void _fetchProducts(Store store) async {
     Completer completer = Completer();
     store.dispatch(fetchWishlist(completer));
-    try {
-      await completer.future;
-    } on ApiException catch (e) {
-      _onError(e);
-    } finally {
-      setState(() => _isLoading = false);
-    }
+    completer.future
+        .onError(_handleError)
+        .whenComplete(() => setState(() => _isLoading = false));
   }
 
-  void _onError(ApiException e) {
-    showErrorNotification(
-      context,
-      "An error occured while loading the wishlist!",
-    );
+  void _removeFromWishlist(ShoppingItem item, {showUndo = false}) {
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(removeWishlistItem(item, completer));
+    completer.future.then((_) => showUndo
+        ? showScaffoldMessage(
+            context,
+            AppLocalizations.of(context)!.item_removed_from_wishlist(item.name),
+            action: SnackBarAction(
+              label: AppLocalizations.of(context)!.undo,
+              onPressed: () => _addToWishlist(item),
+            ),
+          )
+        : null); //.catchError(_handleError);
   }
 
-  void _removeFromWishlist(ShoppingItem item, [void Function()? callback]) {
-    setState(() {
-      Completer completer = Completer();
-      final store = StoreProvider.of<AppState>(context);
-      store.dispatch(removeWishlistItem(item, completer));
-      completer.future.then(
-        (_) => callback?.call(),
-      );
-    });
+  void _addToWishlist(ShoppingItem item) {
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(addWishlistItem(item, completer));
+    completer.future.catchError(_handleError);
   }
 
-  void _addToWishlist(ShoppingItem item, [void Function()? callback]) {
-    setState(() {
-      Completer completer = Completer();
-      final store = StoreProvider.of<AppState>(context);
-      store.dispatch(addWishlistItem(item, completer));
-      try {
-        completer.future.then(
-          (_) => callback?.call(),
-        );
-      } on ApiException catch (e) {
-        _onError(e);
-      }
-    });
+  void _addToBasket(ShoppingItem item) {
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(addBasketItem(item, completer));
+    completer.future
+        .then(
+          (_) => showScaffoldMessage(
+            context,
+            AppLocalizations.of(context)!.item_added_to_basket(item.name),
+          ),
+        )
+        .catchError(_handleError);
   }
 
-  void _addToBasket(ShoppingItem item, [void Function()? callback]) {
-    setState(() {
-      Completer completer = Completer();
-      final store = StoreProvider.of<AppState>(context);
-      store.dispatch(addBasketItem(item, completer));
-      try {
-        completer.future.then(
-          (value) => callback?.call(),
-        );
-      } on ApiException catch (e) {
-        _onError(e);
-      }
-    });
+  void _moveToBasket(ShoppingItem item) {
+    _removeFromWishlist(item);
+    _addToBasket(item);
   }
 
   void _navigateToProductPage(String productId) {
@@ -94,12 +87,22 @@ class _WishListPageState extends State<WishListPage> {
         ),
       );
     }).catchError((_) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("An error occurred while loading the whishlist!"),
-        ),
+      showScaffoldMessage(
+        context,
+        AppLocalizations.of(context)!.err_loading_product,
       );
     });
+  }
+
+  void _handleError(Object? error, StackTrace stackTrace) {
+    if (error is ApiException) {
+      showScaffoldMessage(
+        context,
+        AppLocalizations.of(context)!.err_server_connection,
+      );
+    } else {
+      if (kDebugMode) print(stackTrace.toString());
+    }
   }
 
   @override
@@ -114,9 +117,9 @@ class _WishListPageState extends State<WishListPage> {
           );
         }
         if (whishlist.isEmpty) {
-          return const NoEntriesDisplay(
+          return NoEntriesDisplay(
             iconData: Icons.star_border,
-            text: "No products in your wishlist",
+            text: AppLocalizations.of(context)!.empty_wishlist,
           );
         }
         return Scaffold(
@@ -142,7 +145,7 @@ class _WishListPageState extends State<WishListPage> {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            "Remove from wishlist",
+                            AppLocalizations.of(context)!.remove_from_wishlist,
                             style: Theme.of(context).textTheme.labelLarge,
                           ),
                         ],
@@ -155,7 +158,7 @@ class _WishListPageState extends State<WishListPage> {
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(
-                            "Add from basket",
+                            AppLocalizations.of(context)!.add_to_basket,
                             style: Theme.of(context).textTheme.labelLarge,
                           ),
                           const SizedBox(width: 5),
@@ -171,69 +174,45 @@ class _WishListPageState extends State<WishListPage> {
                     // drag to the left to delete
                     onDismissed: (direction) {
                       if (direction == DismissDirection.startToEnd) {
-                        _removeFromWishlist(whishlistItem, () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                  "${whishlistItem.name} removed from wishlist"),
-                              action: SnackBarAction(
-                                label: "UNDO",
-                                onPressed: () {
-                                  _addToWishlist(whishlistItem);
-                                },
-                              ),
-                            ),
-                          );
-                        });
+                        _removeFromWishlist(whishlistItem, showUndo: true);
                       } else {
-                        _addToBasket(whishlistItem);
-                        _removeFromWishlist(whishlistItem, () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content:
-                                  Text("${whishlistItem.name} added to basket"),
-                            ),
-                          );
-                        });
+                        _moveToBasket(whishlistItem);
                       }
                     },
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 10.0, vertical: 10.0),
+                      padding: const EdgeInsets.all(15),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  whishlistItem.name,
-                                  style: const TextStyle(
-                                    fontSize: 18.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                whishlistItem.name,
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                const SizedBox(height: 5.0),
-                                Text(
-                                  currencyFormatter.format(whishlistItem.price),
-                                  style: const TextStyle(
-                                    fontSize: 20.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                              ),
+                              const SizedBox(height: 5.0),
+                              Text(
+                                currencyFormatter.format(whishlistItem.price),
+                                style: const TextStyle(
+                                  fontSize: 20.0,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 20.0),
-                          SizedBox(
-                            width: 90,
-                            height: 90,
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(10.0),
-                                child: FilteredImage(
-                                    imageUrl: whishlistItem.image,
-                                    color: whishlistItem.productColor?.color)),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(10.0),
+                            child: FilteredImage(
+                              imageUrl: whishlistItem.image,
+                              color: whishlistItem.productColor?.color,
+                              width: 90,
+                              height: 90,
+                            ),
                           ),
                         ],
                       ),

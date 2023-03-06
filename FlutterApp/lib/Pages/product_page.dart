@@ -11,7 +11,7 @@ import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
 import 'package:flutter_sweater_shop/Models/product_size.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
-import 'package:flutter_sweater_shop/Utilities/messanger.dart';
+import 'package:flutter_sweater_shop/Utilities/messenger.dart';
 import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
 import 'package:flutter_sweater_shop/Widgets/loading_overlay.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';

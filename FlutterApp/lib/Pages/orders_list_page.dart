@@ -5,7 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Models/order.dart';
 import 'package:flutter_sweater_shop/Pages/order_page.dart';
-import 'package:flutter_sweater_shop/Utilities/messanger.dart';
+import 'package:flutter_sweater_shop/Utilities/messenger.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/Widgets/order_card.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
