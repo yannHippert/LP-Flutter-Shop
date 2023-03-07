@@ -5,3 +5,9 @@ class AddProductsAction {
 
   AddProductsAction(this.payload);
 }
+
+class SetProductsAction {
+  final List<VariableProduct> payload;
+
+  SetProductsAction(this.payload);
+}

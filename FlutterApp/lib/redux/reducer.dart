@@ -1,8 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Models/user_info.dart';
 import 'package:flutter_sweater_shop/redux/actions/authentication.dart';
 import 'package:flutter_sweater_shop/redux/actions/basket.dart';
+import 'package:flutter_sweater_shop/redux/actions/category.dart';
 import 'package:flutter_sweater_shop/redux/actions/order.dart';
 import 'package:flutter_sweater_shop/redux/actions/product.dart';
 import 'package:flutter_sweater_shop/redux/actions/wishlist.dart';
@@ -27,6 +29,17 @@ AppState updateProductsReducer(AppState state, dynamic action) {
     return AppState.fromAppState(
       state,
       products: [...state.products, ...action.payload],
+    );
+  }
+
+  if (action is SetProductsAction) {
+    if (kDebugMode) {
+      print("[REDUCER] Setting products: ${action.payload.length} products");
+    }
+
+    return AppState.fromAppState(
+      state,
+      products: action.payload,
     );
   }
 
@@ -152,6 +165,18 @@ AppState updateProductsReducer(AppState state, dynamic action) {
         action.payload,
         ...state.orders,
       ],
+    );
+  }
+
+  if (action is SetCategoriesAction) {
+    if (kDebugMode) {
+      print(
+          "[REDUCER] Setting categories: ${action.payload.length} categories");
+    }
+
+    return AppState.fromAppState(
+      state,
+      categories: action.payload,
     );
   }
 

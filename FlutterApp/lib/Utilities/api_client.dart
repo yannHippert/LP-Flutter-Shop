@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Exceptions/register_exception.dart';
 import 'package:flutter_sweater_shop/Models/order.dart' as ShopOrder;
+import 'package:flutter_sweater_shop/Models/product_category.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Utilities/fixtures.dart';
@@ -28,64 +31,63 @@ class ApiClient {
     List<Map<String, dynamic>> products = [
       {
         "id": uuid.v4(),
-        "name": "Product 1",
+        "name": "Hat",
         "variants": [
           {
             "id": uuid.v4(),
-            "name": "Variant 1",
-            "color": {"id": uuid.v4(), "name": "Red", "r": 255, "g": 0, "b": 0},
-            "size": {"id": uuid.v4(), "name": "Small"},
+            "color": {"name": "Red", "r": 255, "g": 0, "b": 0},
+            "size": {"name": "Small"},
             "price": 10.99
           },
           {
             "id": uuid.v4(),
-            "name": "Variant 2",
-            "color": {
-              "id": uuid.v4(),
-              "name": "Blue",
-              "r": 0,
-              "g": 0,
-              "b": 255
-            },
-            "size": {"id": uuid.v4(), "name": "Medium"},
+            "color": {"name": "Blue", "r": 0, "g": 0, "b": 255},
+            "size": {"name": "Medium"},
             "price": 12.99
           }
         ],
         "description": "This is a sample product",
         "image":
             "https://imgcdn.carhartt.com/is/image/Carhartt//EU_A18_G99?\$pdp-primary-image-static-emea\$",
-        "category": {"id": uuid.v4(), "name": "Category 1"}
+        "category": "hat"
       },
       {
         "id": uuid.v4(),
-        "name": "Product 2",
+        "name": "Gloves",
         "variants": [
           {
             "id": uuid.v4(),
-            "name": "Variant 1",
-            "color": {
-              "id": uuid.v4(),
-              "name": "Green",
-              "r": 0,
-              "g": 255,
-              "b": 0
-            },
+            "color": {"name": "Green", "r": 0, "g": 255, "b": 0},
             //"size": {"id": uuid.v4(), "name": "Small"},
             "price": 9.99
           },
           {
             "id": uuid.v4(),
-            "name": "Variant 2",
-            "color": {"id": uuid.v4(), "name": "Black", "r": 0, "g": 0, "b": 0},
-            //"size": {"id": uuid.v4(), "name": "Large"},
+            "color": {"name": "Black", "r": 0, "g": 0, "b": 0},
             "price": 14.99
           }
         ],
         "description": "This is another sample product",
         "image":
             "https://hestra-products.imgix.net/images/679_86d72eebdf-63660-390-1-original.jpg?&fit=clip&w=992&fm=jpg&bg=var(--beige1)&auto=compress,format",
-        "category": {"id": uuid.v4(), "name": "Category 2"}
-      }
+        "category": "gloves"
+      },
+      {
+        "id": uuid.v4(),
+        "name": 'Ugly "Sweater"',
+        "variants": [
+          {
+            "id": uuid.v4(),
+            "size": {"name": "Small"},
+            "price": 18.00
+          },
+        ],
+        "description":
+            "Don we now our bad sweaters! This sweatshirt may be ugly, but your Catan victory will be beautiful! 50/50 Cotton/poly blend 8.0 crewneck fleece. Screen-printed.",
+        "image":
+            "https://catanshop.com/images/thumbs/0000426_ugly-sweater_600.jpeg",
+        "category": "pullover"
+      },
     ];
 
     try {
@@ -200,34 +202,57 @@ class ApiClient {
   }
 
   static Query<dynamic>? next;
+  //Needed to check if the query changed;
+  static String _searchText = "";
+  static List<String> _selectedCategories = [];
 
-  static Future<List<VariableProduct>> fetchProducts() async {
+  static Future<Map<String, dynamic>> fetchProducts({
+    String searchText = "",
+    List<ProductCategory> categories = const [],
+  }) async {
+    if (kDebugMode) print("[API_CLIENT] Fetching products");
     const limit = 1;
+    Map<String, dynamic> result = {};
+    result.putIfAbsent("first", () => false);
+    List<String> selectedCategories = categories.map((e) => e.id).toList();
     final firestore = FirebaseFirestore.instance;
-    try {
-      final querySnapshot = next == null
-          ? await firestore
-              .collection('products')
-              .orderBy("id")
-              .limit(limit)
-              .get()
-          : await next!.get();
-
-      var products = querySnapshot.docs
-          .map((doc) => VariableProduct.fromJson(doc.data()))
-          .toList();
-
-      if (products.isNotEmpty) {
-        next = firestore
-            .collection('products')
-            .orderBy("id")
-            .startAfter([products.last.id]).limit(limit);
-      }
-
-      return products;
-    } catch (e) {
-      throw ApiException(500);
+    if (_searchText != searchText ||
+        !(_selectedCategories.length == selectedCategories.length &&
+            _selectedCategories.every(
+              (e) => selectedCategories.contains(e),
+            ))) {
+      _searchText = searchText;
+      _selectedCategories = selectedCategories;
+      next = null;
+      result.update("first", (value) => true);
     }
+
+    var query = firestore.collection('products').orderBy("name").limit(limit);
+
+    if (searchText != "") {
+      query = query.where('name', isGreaterThanOrEqualTo: searchText);
+    }
+
+    if (selectedCategories.isNotEmpty) {
+      query = query.where('category', whereIn: selectedCategories);
+    }
+
+    final querySnapshot = next == null ? await query.get() : await next!.get();
+
+    var products = querySnapshot.docs
+        .map((doc) => VariableProduct.fromJson(doc.data()))
+        .toList();
+
+    if (kDebugMode) {
+      print("[API_CLIENT] Fetched products: ${products.length} products");
+    }
+
+    if (products.isNotEmpty) {
+      next = query.startAfter([products.last.name]);
+    }
+
+    result.putIfAbsent("products", () => products);
+    return result;
   }
 
   static Future<VariableProduct> fetchProduct(String id) async {
@@ -342,6 +367,24 @@ class ApiClient {
         print("[API-CLIENT] Cleared basket");
       }
     } catch (_) {
+      throw ApiException(500);
+    }
+  }
+
+  static Future<List<ProductCategory>> fetchCategories() async {
+    final firestore = FirebaseFirestore.instance;
+
+    try {
+      final querySnapshot = await firestore.collection('categories').get();
+
+      if (kDebugMode) {
+        print(
+            "[API-CLIENT] Fetched categories: ${querySnapshot.docs.length.toString()} items found");
+      }
+      return querySnapshot.docs
+          .map((doc) => ProductCategory.fromJson(doc.id, doc.data()))
+          .toList();
+    } catch (e) {
       throw ApiException(500);
     }
   }
