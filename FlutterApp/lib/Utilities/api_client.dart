@@ -361,7 +361,13 @@ class ApiClient {
       await firestore
           .collection('basket')
           .doc(FirebaseAuth.instance.currentUser!.uid)
-          .delete();
+          .collection('items')
+          .get()
+          .then((snapshot) {
+        for (DocumentSnapshot ds in snapshot.docs) {
+          ds.reference.delete();
+        }
+      });
 
       if (kDebugMode) {
         print("[API-CLIENT] Cleared basket");
