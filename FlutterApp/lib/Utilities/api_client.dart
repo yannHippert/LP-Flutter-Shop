@@ -132,7 +132,7 @@ class ApiClient {
 
       // Delete existing items
       final existingItems = await firestore
-          .collection('whislists')
+          .collection('wishlists')
           .doc(user.uid)
           .collection('items')
           .get();
@@ -144,7 +144,7 @@ class ApiClient {
       for (final item in items) {
         batch.set(
           firestore
-              .collection('whislists')
+              .collection('wishlists')
               .doc(user.uid)
               .collection('items')
               .doc(item.itemId),
@@ -166,7 +166,7 @@ class ApiClient {
       if (user == null) throw ApiException(401);
 
       final querySnapshot = await firestore
-          .collection('whislists')
+          .collection('wishlists')
           .doc(user.uid)
           .collection('items')
           .get();
