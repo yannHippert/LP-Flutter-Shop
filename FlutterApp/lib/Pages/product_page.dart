@@ -10,6 +10,7 @@ import 'package:flutter_sweater_shop/Models/user_info.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
 import 'package:flutter_sweater_shop/Models/product_color.dart';
 import 'package:flutter_sweater_shop/Models/product_size.dart';
+import 'package:flutter_sweater_shop/Pages/login_page.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
 import 'package:flutter_sweater_shop/Utilities/messenger.dart';
 import 'package:flutter_sweater_shop/Widgets/filtered_image.dart';
@@ -211,7 +212,10 @@ class _ProductPageState extends State<ProductPage> {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: ElevatedButton.icon(
-        onPressed: () => {},
+        onPressed: () => showScaffoldMessage(
+          context,
+          AppLocalizations.of(context)!.please_login,
+        ),
         icon: const Icon(Icons.login),
         label: Text(AppLocalizations.of(context)!.login_to_shop),
       ),

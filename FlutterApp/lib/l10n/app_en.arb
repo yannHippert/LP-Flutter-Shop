@@ -20,6 +20,7 @@
   "delete": "Delete",
   "confirm_payment": "Confirm payment",
   "welcome_back": "Welcome back!",
+  "please_login": "Please login to perform this action",
   "user_loggedin": "You have been logged in",
   "user_loggedout": "You have been logged out",
   "add_to_basket": "Add to basket",

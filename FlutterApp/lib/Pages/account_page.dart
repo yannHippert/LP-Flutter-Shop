@@ -18,6 +18,6 @@ class _AccounPageState extends State<AccountPage> {
     return StoreConnector<AppState, UserInfo>(
         converter: (store) => store.state.userInfo,
         builder: (context, UserInfo vm) =>
-            vm.isLoggedIn ? const SettingsPage() : const LoginPage());
+            vm.isLoggedIn ? const SettingsPage() : LoginPage());
   }
 }
