@@ -160,7 +160,7 @@ class _BasketPageState extends State<BasketPage> {
     return Stack(
       children: [
         Container(
-          padding: const EdgeInsets.all(10),
+          padding: pagePadding,
           child: StoreConnector<AppState, List<ShoppingItem>>(
             onInit: _fetchBasket,
             converter: (store) => store.state.basket,

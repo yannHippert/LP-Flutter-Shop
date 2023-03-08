@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_sweater_shop/Utilities/constants.dart';
 import 'package:flutter_sweater_shop/Utilities/messenger.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/Widgets/product_card.dart';
@@ -17,9 +18,6 @@ import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/redux/middleware/category.dart';
 import 'package:flutter_sweater_shop/redux/middleware/product.dart';
 import 'package:redux/redux.dart';
-
-const double sidePadding = 20;
-const double itemGap = 10;
 
 class ProductListPage extends StatefulWidget {
   const ProductListPage({Key? key}) : super(key: key);
@@ -58,9 +56,10 @@ class _ProductsListPageState extends State<ProductListPage> {
   }
 
   double get elementWidth {
-    double width =
-        (screenWidth - 2 * sidePadding - ((columnCount - 1) * itemGap)) /
-            columnCount;
+    double width = (screenWidth -
+            2 * pagePaddingSize -
+            ((columnCount - 1) * pagePaddingSize)) /
+        columnCount;
     return width;
   }
 
@@ -149,10 +148,10 @@ class _ProductsListPageState extends State<ProductListPage> {
         physics: isSkeleton
             ? const NeverScrollableScrollPhysics()
             : const BouncingScrollPhysics(),
-        padding: const EdgeInsets.all(sidePadding),
+        padding: pagePadding,
         shrinkWrap: true,
-        crossAxisSpacing: itemGap,
-        mainAxisSpacing: itemGap,
+        crossAxisSpacing: pagePaddingSize,
+        mainAxisSpacing: pagePaddingSize,
         crossAxisCount: columnCount,
         childAspectRatio: 0.80,
         children: children);

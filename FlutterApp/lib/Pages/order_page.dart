@@ -53,7 +53,7 @@ class OrderPage extends StatelessWidget {
         title: Text(AppLocalizations.of(context)!.order),
       ),
       body: Container(
-        padding: const EdgeInsets.all(10),
+        padding: pagePadding,
         child: Column(
           children: [
             _buildSpacedTextSmall(context, "", order.id),

@@ -5,6 +5,7 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_sweater_shop/Models/order.dart';
 import 'package:flutter_sweater_shop/Pages/order_page.dart';
+import 'package:flutter_sweater_shop/Utilities/constants.dart';
 import 'package:flutter_sweater_shop/Utilities/messenger.dart';
 import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/Widgets/order_card.dart';
@@ -65,7 +66,9 @@ class _OrderListPageState extends State<OrderListPage> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, List<Order>>(
+    return Container(
+      padding: pagePadding,
+      child: StoreConnector<AppState, List<Order>>(
         onInit: _fetchOrders,
         converter: (store) => store.state.orders,
         builder: (context, List<Order> orders) {
@@ -78,6 +81,8 @@ class _OrderListPageState extends State<OrderListPage> {
                 onTap: () => _onTap(orders[index]),
                 child: OrderCard(order: orders[index])),
           );
-        });
+        },
+      ),
+    );
   }
 }

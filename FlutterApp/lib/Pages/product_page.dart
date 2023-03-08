@@ -229,7 +229,7 @@ class _ProductPageState extends State<ProductPage> {
           body: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: Container(
-              padding: const EdgeInsets.all(10),
+              padding: pagePadding,
               child: Column(
                 children: [
                   ClipRRect(

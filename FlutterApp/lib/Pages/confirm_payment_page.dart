@@ -117,7 +117,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
           title: Text(AppLocalizations.of(context)!.checkout),
         ),
         body: Container(
-          padding: const EdgeInsets.all(10),
+          padding: pagePadding,
           child: StoreConnector<AppState, List<ShoppingItem>>(
             converter: (store) => store.state.basket,
             builder: (context, List<ShoppingItem> basket) =>
