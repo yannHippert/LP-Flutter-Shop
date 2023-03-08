@@ -79,13 +79,13 @@ ThunkAction<AppState> decrementQuantity(
   };
 }
 
-ThunkAction<AppState> deleteBasketItem(
+ThunkAction<AppState> removeBasketItem(
   String itemId,
   Completer completer,
 ) {
   return (Store<AppState> store) async {
     try {
-      await ApiClient.deleteBasketItem(itemId);
+      await ApiClient.removeBasketItem(itemId);
       store.dispatch(DeleteBasketItemAction(itemId));
       completer.complete();
     } on ApiException catch (e) {

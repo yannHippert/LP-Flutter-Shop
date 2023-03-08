@@ -272,7 +272,7 @@ class ApiClient {
     }
   }
 
-  static Future<void> deleteBasketItem(String itemId) async {
+  static Future<void> removeBasketItem(String itemId) async {
     final firestore = FirebaseFirestore.instance;
     try {
       await firestore

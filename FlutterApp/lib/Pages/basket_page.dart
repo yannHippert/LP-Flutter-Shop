@@ -14,6 +14,7 @@ import 'package:flutter_sweater_shop/Widgets/no_entries_display.dart';
 import 'package:flutter_sweater_shop/redux/app_state.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/redux/middleware/basket.dart';
+import 'package:flutter_sweater_shop/redux/middleware/wishlist.dart';
 import 'package:redux/redux.dart';
 
 class BasketPage extends StatefulWidget {
@@ -35,17 +36,17 @@ class _BasketPageState extends State<BasketPage> {
         .whenComplete(() => setState(() => _isLoading = false));
   }
 
-  void _onDeleteItem(String itemId) {
+  void _handleDeleteItem(String itemId) {
     setState(() => _isActionInProgress = true);
     Completer completer = Completer();
     final store = StoreProvider.of<AppState>(context);
-    store.dispatch(deleteBasketItem(itemId, completer));
+    store.dispatch(removeBasketItem(itemId, completer));
     completer.future
         .onError(_handleError)
         .whenComplete(() => setState(() => _isActionInProgress = false));
   }
 
-  void _onDecrementQuantity(String itemId) {
+  void _handleDecrementQuantity(String itemId) {
     setState(() => _isActionInProgress = true);
     Completer completer = Completer();
     final store = StoreProvider.of<AppState>(context);
@@ -55,7 +56,7 @@ class _BasketPageState extends State<BasketPage> {
         .whenComplete(() => setState(() => _isActionInProgress = false));
   }
 
-  void _onIncrementQuantity(String itemId) {
+  void _handleIncrementQuantity(String itemId) {
     setState(() => _isActionInProgress = true);
     Completer completer = Completer();
     final store = StoreProvider.of<AppState>(context);
@@ -76,13 +77,28 @@ class _BasketPageState extends State<BasketPage> {
     }
   }
 
-  void _onCheckout() {
+  void _handleMoveToWishlist(ShoppingItem item) {
+    setState(() => _isActionInProgress = true);
+    Completer basketCompleter = Completer();
+    Completer wishlistCompleter = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(removeBasketItem(item.itemId, basketCompleter));
+    store.dispatch(addWishlistItem(item, wishlistCompleter));
+    Future.wait([basketCompleter.future, wishlistCompleter.future])
+        .then((_) => showScaffoldMessage(
+              context,
+              AppLocalizations.of(context)!.item_added_to_basket(item.name),
+            ))
+        .catchError(_handleError)
+        .whenComplete(() => setState(() => _isActionInProgress = false));
+  }
+
+  void _handleCheckout() {
     Navigator.of(context).push(
       MaterialPageRoute(builder: (_) => const ConfirmPaymentPage()),
     );
   }
 
-  // TODO: loading page
   Widget _buildLoading() {
     return ListView.builder(
       itemCount: 5,
@@ -108,7 +124,7 @@ class _BasketPageState extends State<BasketPage> {
           style: Theme.of(context).textTheme.displayMedium,
         ),
         ElevatedButton(
-          onPressed: _onCheckout,
+          onPressed: _handleCheckout,
           child: Text(
             AppLocalizations.of(context)!.checkout_proceed(order.itemQuantity),
           ),
@@ -128,9 +144,12 @@ class _BasketPageState extends State<BasketPage> {
         var basketItem = basket[index];
         return BasketItemCard(
           basketItem: basketItem,
-          onDelete: () => _onDeleteItem(basketItem.itemId),
-          onDecrementQuantity: () => _onDecrementQuantity(basketItem.itemId),
-          onIncrementQuantity: () => _onIncrementQuantity(basketItem.itemId),
+          onDelete: () => _handleDeleteItem(basketItem.itemId),
+          onDecrementQuantity: () =>
+              _handleDecrementQuantity(basketItem.itemId),
+          onIncrementQuantity: () =>
+              _handleIncrementQuantity(basketItem.itemId),
+          onMoveToWishlist: () => _handleMoveToWishlist(basketItem),
         );
       },
     );
@@ -141,17 +160,18 @@ class _BasketPageState extends State<BasketPage> {
     return Stack(
       children: [
         Container(
-            padding: const EdgeInsets.all(10),
-            child: StoreConnector<AppState, List<ShoppingItem>>(
-              onInit: _fetchBasket,
-              converter: (store) => store.state.basket,
-              builder: (context, List<ShoppingItem> basket) => Column(
-                children: [
-                  _buildCheckout(basket),
-                  Expanded(child: _buildBasketItems(basket))
-                ],
-              ),
-            )),
+          padding: const EdgeInsets.all(10),
+          child: StoreConnector<AppState, List<ShoppingItem>>(
+            onInit: _fetchBasket,
+            converter: (store) => store.state.basket,
+            builder: (context, List<ShoppingItem> basket) => Column(
+              children: [
+                _buildCheckout(basket),
+                Expanded(child: _buildBasketItems(basket))
+              ],
+            ),
+          ),
+        ),
         _isActionInProgress ? const LoadingOverlay() : const SizedBox.shrink(),
       ],
     );

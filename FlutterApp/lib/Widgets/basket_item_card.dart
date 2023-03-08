@@ -22,6 +22,7 @@ class BasketItemCard extends StatelessWidget {
   final Function() onDelete;
   final Function() onDecrementQuantity;
   final Function() onIncrementQuantity;
+  final Function() onMoveToWishlist;
 
   BasketItemCard({
     super.key,
@@ -29,6 +30,7 @@ class BasketItemCard extends StatelessWidget {
     required this.onDelete,
     required this.onDecrementQuantity,
     required this.onIncrementQuantity,
+    required this.onMoveToWishlist,
   });
 
   Widget _buildImage() {
@@ -111,7 +113,7 @@ class BasketItemCard extends StatelessWidget {
                   child: Text(AppLocalizations.of(context)!.delete)),
               _hSpacer,
               ElevatedButton(
-                  onPressed: () => {},
+                  onPressed: onMoveToWishlist,
                   child: Text(AppLocalizations.of(context)!.move_to_wishlist))
             ],
           )
