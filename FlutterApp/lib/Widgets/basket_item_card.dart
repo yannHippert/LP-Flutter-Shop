@@ -33,11 +33,14 @@ class BasketItemCard extends StatelessWidget {
 
   Widget _buildImage() {
     Color? color = basketItem.hasColor ? basketItem.productColor!.color : null;
-    return FilteredImage(
-      imageUrl: basketItem.image,
-      color: color,
-      width: 140,
-      height: 140,
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(6),
+      child: FilteredImage(
+        imageUrl: basketItem.image,
+        color: color,
+        width: 140,
+        height: 140,
+      ),
     );
   }
 
@@ -52,10 +55,7 @@ class BasketItemCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: _buildImage(),
-              ),
+              _buildImage(),
               _hSpacer,
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -64,7 +64,8 @@ class BasketItemCard extends StatelessWidget {
                   _vSpacer,
                   Text(
                     basketItem.name,
-                    style: Theme.of(context).textTheme.displayLarge,
+                    maxLines: 3,
+                    style: Theme.of(context).textTheme.displayMedium,
                   ),
                   _vSpacer,
                   Text(

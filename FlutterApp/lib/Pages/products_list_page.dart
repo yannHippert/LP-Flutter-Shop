@@ -191,7 +191,6 @@ class _ProductsListPageState extends State<ProductListPage> {
             ),
           )
           .toList(),
-      ...List.generate(10, (index) => SkeletonProductCard(width: elementWidth)),
     ], false);
   }
 

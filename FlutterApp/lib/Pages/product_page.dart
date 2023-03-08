@@ -227,6 +227,7 @@ class _ProductPageState extends State<ProductPage> {
             title: Text(AppLocalizations.of(context)!.product),
           ),
           body: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Container(
               padding: const EdgeInsets.all(10),
               child: Column(
@@ -242,13 +243,18 @@ class _ProductPageState extends State<ProductPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        product.name,
-                        style: Theme.of(context).textTheme.titleLarge,
+                      Flexible(
+                        child: Text(
+                          product.name,
+                          maxLines: 3,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
                       ),
                       Text(
                         currencyFormatter.format(
-                            product.getPrice(_selectedSize, _selectedColor)),
+                          product.getPrice(_selectedSize, _selectedColor),
+                        ),
+                        style: Theme.of(context).textTheme.displayMedium,
                       ),
                     ],
                   ),

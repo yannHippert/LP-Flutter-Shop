@@ -21,6 +21,7 @@ class WishlistItemCard extends StatelessWidget {
             children: [
               Text(
                 wishlistItem.name,
+                maxLines: 2,
                 style: const TextStyle(
                   fontSize: 18.0,
                   fontWeight: FontWeight.bold,
@@ -36,13 +37,15 @@ class WishlistItemCard extends StatelessWidget {
               ),
             ],
           ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(10.0),
-            child: FilteredImage(
-              imageUrl: wishlistItem.image,
-              color: wishlistItem.productColor?.color,
-              width: 90,
-              height: 90,
+          SizedBox(
+            width: 90,
+            height: 90,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.0),
+              child: FilteredImage(
+                imageUrl: wishlistItem.image,
+                color: wishlistItem.productColor?.color,
+              ),
             ),
           ),
         ],

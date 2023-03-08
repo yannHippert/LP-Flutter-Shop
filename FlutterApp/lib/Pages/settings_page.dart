@@ -29,17 +29,6 @@ class SettingsPage extends StatelessWidget {
     return SettingsList(
       sections: [
         SettingsSection(
-          title: Text(AppLocalizations.of(context)!.common),
-          tiles: <SettingsTile>[
-            SettingsTile.navigation(
-              leading: const Icon(Icons.language),
-              title: Text(AppLocalizations.of(context)!.language),
-              value: Text('English'),
-              onPressed: (context) => print("Pressed"),
-            ),
-          ],
-        ),
-        SettingsSection(
             title: Text(AppLocalizations.of(context)!.account),
             tiles: <SettingsTile>[
               SettingsTile(

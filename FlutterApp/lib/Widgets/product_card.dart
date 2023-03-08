@@ -69,23 +69,26 @@ class ProductCard extends StatelessWidget {
             child: _buildImage(),
           ),
           _spacer,
+          Flexible(
+            child: Text(
+              overflow: TextOverflow.ellipsis,
+              product.name,
+              textAlign: TextAlign.left,
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
+          ),
+          _spacer,
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                product.name,
-                textAlign: TextAlign.left,
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
               Text(
                 oCcy.format(product.minPrice),
                 textAlign: TextAlign.right,
                 style: Theme.of(context).textTheme.labelMedium,
               ),
+              _buildColorOptions()
             ],
-          ),
-          _spacer,
-          _buildColorOptions()
+          )
         ],
       ),
     );

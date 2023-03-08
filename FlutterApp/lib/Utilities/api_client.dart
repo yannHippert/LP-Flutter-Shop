@@ -7,88 +7,19 @@ import 'package:flutter_sweater_shop/Models/order.dart' as ShopOrder;
 import 'package:flutter_sweater_shop/Models/product_category.dart';
 import 'package:flutter_sweater_shop/Models/shopping_item.dart';
 import 'package:flutter_sweater_shop/Models/variable_product.dart';
-import 'package:flutter_sweater_shop/Utilities/fixtures.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_sweater_shop/data/gloves.dart';
+import 'package:flutter_sweater_shop/data/hats.dart';
+import 'package:flutter_sweater_shop/data/sweater.dart';
 import 'package:uuid/uuid.dart';
 
 class ApiClient {
-  static Future<void> dummy(dynamic any) async {
-    int statusCode = await Future.delayed(
-      const Duration(seconds: 1),
-      () => 200,
-    );
-    if (statusCode == 200) return;
-
-    throw ApiException(statusCode);
-  }
-
   static Future<void> generateSampleData() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
-    const uuid = Uuid();
 
     // Define an array of sample products
-    List<Map<String, dynamic>> products = [
-      {
-        "id": uuid.v4(),
-        "name": "Hat",
-        "variants": [
-          {
-            "id": uuid.v4(),
-            "color": {"name": "Red", "r": 255, "g": 0, "b": 0},
-            "size": {"name": "Small"},
-            "price": 10.99
-          },
-          {
-            "id": uuid.v4(),
-            "color": {"name": "Blue", "r": 0, "g": 0, "b": 255},
-            "size": {"name": "Medium"},
-            "price": 12.99
-          }
-        ],
-        "description": "This is a sample product",
-        "image":
-            "https://imgcdn.carhartt.com/is/image/Carhartt//EU_A18_G99?\$pdp-primary-image-static-emea\$",
-        "category": "hat"
-      },
-      {
-        "id": uuid.v4(),
-        "name": "Gloves",
-        "variants": [
-          {
-            "id": uuid.v4(),
-            "color": {"name": "Green", "r": 0, "g": 255, "b": 0},
-            //"size": {"id": uuid.v4(), "name": "Small"},
-            "price": 9.99
-          },
-          {
-            "id": uuid.v4(),
-            "color": {"name": "Black", "r": 0, "g": 0, "b": 0},
-            "price": 14.99
-          }
-        ],
-        "description": "This is another sample product",
-        "image":
-            "https://hestra-products.imgix.net/images/679_86d72eebdf-63660-390-1-original.jpg?&fit=clip&w=992&fm=jpg&bg=var(--beige1)&auto=compress,format",
-        "category": "gloves"
-      },
-      {
-        "id": uuid.v4(),
-        "name": 'Ugly "Sweater"',
-        "variants": [
-          {
-            "id": uuid.v4(),
-            "size": {"name": "Small"},
-            "price": 18.00
-          },
-        ],
-        "description":
-            "Don we now our bad sweaters! This sweatshirt may be ugly, but your Catan victory will be beautiful! 50/50 Cotton/poly blend 8.0 crewneck fleece. Screen-printed.",
-        "image":
-            "https://catanshop.com/images/thumbs/0000426_ugly-sweater_600.jpeg",
-        "category": "pullover"
-      },
-    ];
+    List<Map<String, dynamic>> products = [...sweaters, ...hats, ...gloves];
 
     try {
       // Loop through the array and add each product to Firestore
@@ -211,7 +142,7 @@ class ApiClient {
     List<ProductCategory> categories = const [],
   }) async {
     if (kDebugMode) print("[API_CLIENT] Fetching products");
-    const limit = 1;
+    const limit = 6;
     Map<String, dynamic> result = {};
     result.putIfAbsent("first", () => false);
     List<String> selectedCategories = categories.map((e) => e.id).toList();
