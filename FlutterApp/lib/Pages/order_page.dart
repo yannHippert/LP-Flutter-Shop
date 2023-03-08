@@ -12,8 +12,12 @@ class OrderPage extends StatelessWidget {
   Widget _buildSpacedText(BuildContext context, String text1, String text2) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
       Flexible(
-          child: Text(text1,
-              maxLines: 2, style: Theme.of(context).textTheme.displayMedium)),
+        child: Text(
+          text1,
+          maxLines: 2,
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+      ),
       Text(text2, style: Theme.of(context).textTheme.displayMedium)
     ]);
   }
@@ -48,31 +52,33 @@ class OrderPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.order),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            children: [
-              _buildSpacedTextSmall(context, "", order.id),
-              _buildSpacedText(
-                  context, "Created:", dateFormatter.format(order.createdAt)),
-              const Divider(color: Colors.white),
-              ...List<Widget>.generate(
-                order.items.length,
-                (int index) => _buildItemListing(context, order.items[index]),
-              ),
-              const Divider(color: Colors.white),
-              _buildSpacedText(context, AppLocalizations.of(context)!.subtotal,
-                  currencyFormatter.format(order.subtotal)),
-              _buildSpacedText(
-                  context,
-                  AppLocalizations.of(context)!.shipping_fee,
-                  currencyFormatter.format(order.shipping)),
-              const Divider(color: Colors.white),
-              _buildSpacedText(context, AppLocalizations.of(context)!.total,
-                  currencyFormatter.format(order.total)),
-            ],
-          ),
+      body: Container(
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          children: [
+            _buildSpacedTextSmall(context, "", order.id),
+            _buildSpacedText(
+                context, "Created:", dateFormatter.format(order.createdAt)),
+            const Divider(color: Colors.white),
+            Flexible(
+              child: ListView.separated(
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: order.items.length,
+                  separatorBuilder: (_, index) => const SizedBox(height: 5),
+                  itemBuilder: (context, index) =>
+                      _buildItemListing(context, order.items[index])),
+            ),
+            const Divider(color: Colors.white),
+            _buildSpacedText(context, AppLocalizations.of(context)!.subtotal,
+                currencyFormatter.format(order.subtotal)),
+            _buildSpacedText(
+                context,
+                AppLocalizations.of(context)!.shipping_fee,
+                currencyFormatter.format(order.shipping)),
+            const Divider(color: Colors.white),
+            _buildSpacedText(context, AppLocalizations.of(context)!.total,
+                currencyFormatter.format(order.total)),
+          ],
         ),
       ),
     );

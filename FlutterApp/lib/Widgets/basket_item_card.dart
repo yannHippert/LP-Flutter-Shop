@@ -38,8 +38,8 @@ class BasketItemCard extends StatelessWidget {
       child: FilteredImage(
         imageUrl: basketItem.image,
         color: color,
-        width: 140,
-        height: 140,
+        width: 125,
+        height: 125,
       ),
     );
   }
@@ -57,23 +57,26 @@ class BasketItemCard extends StatelessWidget {
             children: [
               _buildImage(),
               _hSpacer,
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _vSpacer,
-                  Text(
-                    basketItem.name,
-                    maxLines: 3,
-                    style: Theme.of(context).textTheme.displayMedium,
-                  ),
-                  _vSpacer,
-                  Text(
-                    currencyFormatter.format(basketItem.price),
-                    style: Theme.of(context).textTheme.displayMedium,
-                  ),
-                ],
-              )
+              Flexible(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _vSpacer,
+                    Text(
+                      basketItem.name,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.displayMedium,
+                    ),
+                    _vSpacer,
+                    Text(
+                      currencyFormatter.format(basketItem.price),
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
           _vSpacer,

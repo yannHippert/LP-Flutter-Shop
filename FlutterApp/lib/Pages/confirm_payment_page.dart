@@ -53,7 +53,13 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
 
   Widget _buildSpacedText(String text1, String text2) {
     return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Text(text1, style: Theme.of(context).textTheme.displayMedium),
+      Flexible(
+        child: Text(
+          text1,
+          maxLines: 2,
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
+      ),
       Text(text2, style: Theme.of(context).textTheme.displayMedium)
     ]);
   }

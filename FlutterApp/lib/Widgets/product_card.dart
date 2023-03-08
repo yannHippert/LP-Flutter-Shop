@@ -71,8 +71,8 @@ class ProductCard extends StatelessWidget {
           _spacer,
           Flexible(
             child: Text(
-              overflow: TextOverflow.ellipsis,
               product.name,
+              overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.left,
               style: Theme.of(context).textTheme.labelMedium,
             ),
