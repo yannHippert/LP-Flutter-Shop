@@ -14,8 +14,8 @@ try {
     $products = $database->collection('products')->documents();
     
     $inputArray = [
-        'customer_id' => $_GET['id_customer'] ?? null,
-        'variant_id' => $_GET['id_variant'] ?? null,
+        'id_customer' => $_GET['id_customer'] ?? null,
+        'id_variant' => $_GET['id_variant'] ?? null,
     ];
 
     $errorList = [];
@@ -30,7 +30,7 @@ try {
     }
 
     // Check if the wishlist exists for the customer
-    $wishlist = $database->collection('wishlists')->document($inputArray['customer_id'])->snapshot();
+    $wishlist = $database->collection('wishlists')->document($inputArray['id_customer'])->snapshot();
 
     if (!$wishlist->exists()) {
         $errorList[] = 'Wishlist not found';
@@ -40,7 +40,7 @@ try {
 
     // Go look for the variant in the wishlists collection
 
-    $variant = $database->collection('wishlists')->document($inputArray['customer_id'])->collection('items')->document($inputArray['variant_id'])->snapshot();
+    $variant = $database->collection('wishlists')->document($inputArray['id_customer'])->collection('items')->document($inputArray['id_variant'])->snapshot();
 
     if (!$variant->exists()) {
         $errorList[] = 'Variant not found';
@@ -50,7 +50,7 @@ try {
 
     // Delete the variant from the wishlist
 
-    $database->collection('wishlists')->document($inputArray['customer_id'])->collection('items')->document($inputArray['variant_id'])->delete();
+    $database->collection('wishlists')->document($inputArray['id_customer'])->collection('items')->document($inputArray['id_variant'])->delete();
 
     http_response_code(200);
     echo json_encode(['success' => true, 'message' => 'Variant removed from wishlist']);

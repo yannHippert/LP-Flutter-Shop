@@ -15,8 +15,8 @@ try {
     $database = $firestoreConnector->getDatabase();
 
     $inputArray = [
-        'customer_id' => $_GET['id_customer'] ?? null,
-        'variant_id' => $_GET['id_variant'] ?? null,
+        'id_customer' => $_GET['id_customer'] ?? null,
+        'id_variant' => $_GET['id_variant'] ?? null,
         'id_product' => $_GET['id_product'] ?? null,
     ];
 
@@ -41,7 +41,7 @@ try {
 // First, check if basket exists for the customer
 
 
-    $basket = $database->collection('basket')->document($inputArray['customer_id'])->snapshot();
+    $basket = $database->collection('basket')->document($inputArray['id_customer'])->snapshot();
 
     if (!$basket->exists()) {
         $errorList[] = 'Basket not found';
@@ -55,9 +55,16 @@ try {
     $product = $database->collection('products')->document($inputArray['id_product'])->snapshot();
     $variant = null;
 
+    if (empty($product->data())) {
+        $errorList[] = 'Product not found';
+        generateErrorResponse($errorList);
+        exit;
+    }
+
+
 //find the variant that has the field id equal to the id_variant
     $variant = array_filter($product->data()['variants'], function ($variant) use ($inputArray) {
-        return $variant['id'] === $inputArray['variant_id'];
+        return $variant['id'] === $inputArray['id_variant'];
     });
 
     if (empty($variant)) {
@@ -81,9 +88,9 @@ try {
         "size" => $variant['size'] ?? null,
     ];
 
-    $basketRef = $database->collection('basket')->document($inputArray['customer_id']);
+    $basketRef = $database->collection('basket')->document($inputArray['id_customer']);
 
-    $basketRef->collection('items')->document($inputArray['variant_id'])->set($newBasketItem);
+    $basketRef->collection('items')->document($inputArray['id_variant'])->set($newBasketItem);
 
 // Return success response
     echo json_encode(['success' => true]);

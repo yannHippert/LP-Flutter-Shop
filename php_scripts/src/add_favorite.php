@@ -15,8 +15,8 @@ try {
     $database = $firestoreConnector->getDatabase();
 
     $inputArray = [
-        'customer_id' => $_GET['id_customer'] ?? null,
-        'variant_id' => $_GET['id_variant'] ?? null,
+        'id_customer' => $_GET['id_customer'] ?? null,
+        'id_variant' => $_GET['id_variant'] ?? null,
         'id_product' => $_GET['id_product'] ?? null,
     ];
 
@@ -40,7 +40,7 @@ try {
 
 // First, check if wishlist exists for the customer
 
-    $wishlist = $database->collection('wishlists')->document($inputArray['customer_id'])->snapshot();
+    $wishlist = $database->collection('wishlists')->document($inputArray['id_customer'])->snapshot();
 
     if (!$wishlist->exists()) {
         $errorList[] = 'Wishlist not found';
@@ -54,12 +54,19 @@ try {
     $variant = null;
 
 //find the variant that has the field id equal to the id_variant
+
+    if (empty($product->data())) {
+        $errorList[] = 'Product not found';
+        generateErrorResponse($errorList);
+        exit;
+    }
+
     $variant = array_filter($product->data()['variants'], function ($variant) use ($inputArray) {
-        return $variant['id'] === $inputArray['variant_id'];
+        return $variant['id'] === $inputArray['id_variant'];
     });
 
     if (empty($variant)) {
-        $errorList[] = 'Product not found';
+        $errorList[] = 'Variant not found';
         generateErrorResponse($errorList);
         exit;
     }
@@ -79,9 +86,9 @@ try {
         "size" => $variant['size'] ?? null,
     ];
 
-    $wishlistRef = $database->collection('wishlists')->document($inputArray['customer_id']);
+    $wishlistRef = $database->collection('wishlists')->document($inputArray['id_customer']);
 
-    $wishlistRef->collection('items')->document($inputArray['variant_id'])->set($newWishListItems);
+    $wishlistRef->collection('items')->document($inputArray['id_variant'])->set($newWishListItems);
 
 // Return success response
     echo json_encode(['success' => true]);
