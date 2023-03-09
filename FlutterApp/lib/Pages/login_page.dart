@@ -24,13 +24,9 @@ class _LoginPageState extends State<LoginPage> {
   final _storage = const FlutterSecureStorage();
 
   bool _passwordVisible = false;
-  final _emailController = TextEditingController(
-    text: 'user@shop.fr',
-  );
+  final _emailController = TextEditingController();
   String? _emailError;
-  final _passwordController = TextEditingController(
-    text: 'password',
-  );
+  final _passwordController = TextEditingController();
   String? _passwordError;
   bool _isLoading = false;
 
