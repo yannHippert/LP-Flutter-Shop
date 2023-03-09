@@ -34,4 +34,8 @@ class AppState {
   VariableProduct? getProductById(String id) {
     return products.firstWhereOrNull((element) => element.id == id);
   }
+
+  bool isVariantInWhishlist(String id) {
+    return wishlist.any((element) => element.id == id);
+  }
 }

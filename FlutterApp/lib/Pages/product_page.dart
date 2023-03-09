@@ -85,6 +85,24 @@ class _ProductPageState extends State<ProductPage> {
         .whenComplete(() => setState(() => _isLoading = false));
   }
 
+  void _removeFromWishlist() {
+    setState(() => _isLoading = true);
+    Completer completer = Completer();
+    final store = StoreProvider.of<AppState>(context);
+    store.dispatch(
+      removeWishlistItem(
+          ShoppingItem.fromProduct(product, _selectedSize, _selectedColor),
+          completer),
+    );
+    completer.future
+        .then((value) => showScaffoldMessage(
+              context,
+              AppLocalizations.of(context)!.removed_from_wishlist,
+            ))
+        .onError(_handleError)
+        .whenComplete(() => setState(() => _isLoading = false));
+  }
+
   void _handleError(Object? error, StackTrace stackTrace) {
     if (error is ApiException) {
       showScaffoldMessage(
@@ -191,7 +209,32 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
-  Widget _buildAddToWishlistButton() {
+  Widget _buildAddToWishlistButton(
+      BuildContext context, VariableProduct product) {
+    ShoppingItem? shoppingItem;
+
+    if (_isPossibleSize(_selectedSize, _selectedColor)) {
+      shoppingItem =
+          ShoppingItem.fromProduct(product, _selectedSize, _selectedColor);
+    }
+
+    final wishlist = StoreProvider.of<AppState>(context).state.wishlist;
+    bool isInWishlist =
+        wishlist.any((item) => item.itemId == shoppingItem?.itemId);
+    if (isInWishlist) {
+      return Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: ElevatedButton.icon(
+          onPressed: _isPossibleSize(_selectedSize, _selectedColor)
+              ? _removeFromWishlist
+              : null,
+          icon: const Icon(Icons.star),
+          label: Text(AppLocalizations.of(context)!.remove_from_wishlist),
+        ),
+      );
+    }
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -280,18 +323,20 @@ class _ProductPageState extends State<ProductPage> {
                   _buildColorSelection(),
                   vSpacer,
                   StoreConnector<AppState, UserInfo>(
-                    converter: (store) => store.state.userInfo,
-                    builder: (context, UserInfo userInfo) {
-                      return userInfo.isLoggedIn
-                          ? Column(
-                              children: [
-                                _buildAddToBasketButton(),
-                                _buildAddToWishlistButton(),
-                              ],
-                            )
-                          : _buildLoginButton();
-                    },
-                  ),
+                      converter: (store) => store.state.userInfo,
+                      builder: (context, UserInfo userInfo) {
+                        return userInfo.isLoggedIn
+                            ? Column(
+                                children: [
+                                  _buildAddToBasketButton(),
+                                  _buildAddToWishlistButton(
+                                    context,
+                                    product,
+                                  ),
+                                ],
+                              )
+                            : _buildLoginButton();
+                      }),
                   vSpacer,
                   Column(
                     mainAxisAlignment: MainAxisAlignment.start,
