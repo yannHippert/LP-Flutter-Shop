@@ -1,5 +1,9 @@
 # Ulgy Sweater Shop
 
+## Download APK
+
+- http://vps.redingathome.de:8080/app-release.apk
+
 ## Login-info
 
 ### 1
