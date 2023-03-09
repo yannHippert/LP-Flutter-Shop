@@ -58,7 +58,9 @@ class OrderPage extends StatelessWidget {
           children: [
             _buildSpacedTextSmall(context, "", order.id),
             _buildSpacedText(
-                context, "Created:", dateFormatter.format(order.createdAt)),
+                context,
+                "${AppLocalizations.of(context)!.creation_date}:",
+                dateFormatter.format(order.createdAt)),
             const Divider(color: Colors.white),
             Flexible(
               child: ListView.separated(

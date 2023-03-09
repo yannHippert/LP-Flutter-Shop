@@ -100,10 +100,7 @@ class _BasketPageState extends State<BasketPage> {
   }
 
   Widget _buildLoading() {
-    return ListView.builder(
-      itemCount: 5,
-      itemBuilder: (context, index) => const Text("Loading"),
-    );
+    return LoadingOverlay(message: AppLocalizations.of(context)!.loading);
   }
 
   Widget _buildNoEntries() {
@@ -172,7 +169,7 @@ class _BasketPageState extends State<BasketPage> {
             ),
           ),
         ),
-        _isActionInProgress ? const LoadingOverlay() : const SizedBox.shrink(),
+        _isActionInProgress ? LoadingOverlay() : const SizedBox.shrink(),
       ],
     );
   }

@@ -308,7 +308,7 @@ class _ProductPageState extends State<ProductPage> {
             ),
           ),
         ),
-        _isLoading ? const LoadingOverlay() : const SizedBox.shrink(),
+        _isLoading ? LoadingOverlay() : const SizedBox.shrink(),
       ],
     );
   }

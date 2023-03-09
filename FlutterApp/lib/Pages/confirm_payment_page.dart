@@ -125,7 +125,7 @@ class _ConfirmPaymentPageState extends State<ConfirmPaymentPage> {
           ),
         ),
       ),
-      _isActionInProgress ? const LoadingOverlay() : const SizedBox.shrink(),
+      _isActionInProgress ? LoadingOverlay() : const SizedBox.shrink(),
     ]);
   }
 }

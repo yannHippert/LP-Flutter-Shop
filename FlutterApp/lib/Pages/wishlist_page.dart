@@ -202,7 +202,7 @@ class _WishListPageState extends State<WishListPage> {
           );
         },
       ),
-      _isActionInProgress ? const LoadingOverlay() : const SizedBox.shrink(),
+      _isActionInProgress ? LoadingOverlay() : const SizedBox.shrink(),
     ]);
   }
 }

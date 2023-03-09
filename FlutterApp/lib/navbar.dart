@@ -30,41 +30,43 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final _storage = const FlutterSecureStorage();
   int _selectedIndex = 0;
 
-  static const List _pages = [
-    {
-      "icon": Icons.list,
-      "label": "Products",
-      "widget": ProductListPage(),
-      "needsLogin": false
-    },
-    {
-      "icon": Icons.account_circle,
-      "label": "Account",
-      "widget": AccountPage(),
-      "needsLogin": false
-    },
-    {
-      "icon": Icons.star,
-      "label": "Wishlist",
-      "widget": WishListPage(),
-      "needsLogin": true
-    },
-    {
-      "icon": Icons.shopping_cart,
-      "label": "Basket",
-      "widget": BasketPage(),
-      "needsLogin": true
-    },
-    {
-      "icon": Icons.shopping_bag,
-      "label": "Orders",
-      "widget": OrderListPage(),
-      "needsLogin": true
-    },
-  ];
+  List<dynamic> _pagesList(BuildContext context) {
+    return [
+      {
+        "icon": Icons.list,
+        "label": AppLocalizations.of(context)!.prodcuts,
+        "widget": const ProductListPage(),
+        "needsLogin": false
+      },
+      {
+        "icon": Icons.account_circle,
+        "label": AppLocalizations.of(context)!.account,
+        "widget": const AccountPage(),
+        "needsLogin": false
+      },
+      {
+        "icon": Icons.star,
+        "label": AppLocalizations.of(context)!.wishlist,
+        "widget": const WishListPage(),
+        "needsLogin": true
+      },
+      {
+        "icon": Icons.shopping_cart,
+        "label": AppLocalizations.of(context)!.basket,
+        "widget": const BasketPage(),
+        "needsLogin": true
+      },
+      {
+        "icon": Icons.shopping_bag,
+        "label": AppLocalizations.of(context)!.orders,
+        "widget": const OrderListPage(),
+        "needsLogin": true
+      },
+    ];
+  }
 
-  List<dynamic> _getPages(bool isLoggedIn) {
-    return _pages
+  List<dynamic> _getPages(BuildContext context, bool isLoggedIn) {
+    return _pagesList(context)
         .where(
           (element) =>
               !element["needsLogin"] || element["needsLogin"] == isLoggedIn,
@@ -91,8 +93,9 @@ class _BottomNavBarState extends State<BottomNavBar> {
     setState(() => _selectedIndex = index);
   }
 
-  List<BottomNavigationBarItem> getNavIcons(bool isLoggedIn) {
-    return _getPages(isLoggedIn)
+  List<BottomNavigationBarItem> getNavIcons(
+      BuildContext context, bool isLoggedIn) {
+    return _getPages(context, isLoggedIn)
         .map((e) => BottomNavigationBarItem(
               icon: Icon(e["icon"]),
               label: e["label"],
@@ -127,7 +130,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
       converter: (store) => store.state.userInfo,
       builder: (context, UserInfo userInfo) => Scaffold(
         appBar: AppBar(
-          title: Text(_pages.elementAt(_selectedIndex)["label"]),
+          title: Text(_pagesList(context).elementAt(_selectedIndex)["label"]),
           actions: [
             userInfo.isLoggedIn
                 ? const Icon(Icons.vpn_key)
@@ -137,12 +140,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
         ),
         body: IndexedStack(
           index: _selectedIndex,
-          children: _getPages(userInfo.isLoggedIn)
+          children: _getPages(context, userInfo.isLoggedIn)
               .map<Widget>((e) => e["widget"])
               .toList(),
         ),
         bottomNavigationBar: BottomNavigationBar(
-          items: getNavIcons(userInfo.isLoggedIn),
+          items: getNavIcons(context, userInfo.isLoggedIn),
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
           selectedItemColor: Theme.of(context).colorScheme.primary,
