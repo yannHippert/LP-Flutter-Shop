@@ -25,11 +25,11 @@ password: `password`
 - Get products list
   http://vps.redingathome.de:8080/get_products_list.php
 - Add favorite
-  http://vps.redingathome.de:8080/add_favorite.php?id_customer=ZPgk3zd3DzTsLrPLayNjAnAFTsh1&id_variant=78d61665-1b1a-4d2b-85e1-9ee2d5c9a3e2&id_product=095c88b8-9a60-4e2e-8f6c-3520f16709cb
+  http://vps.redingathome.de:8080/add_favorite.php?id_customer=ZPgk3zd3DzTsLrPLayNjAnAFTsh1&id_variant=1f6e0b8e-64a1-4ad8-a164-f892b754f504&id_product=0a1fe2d8-a0d9-4959-a4e3-1225447e0493
 - Add to cart
-  http://vps.redingathome.de:8080/add_to_cart.php?id_customer=ZPgk3zd3DzTsLrPLayNjAnAFTsh1&id_variant=78d61665-1b1a-4d2b-85e1-9ee2d5c9a3e2&id_product=095c88b8-9a60-4e2e-8f6c-3520f16709cb
+  http://vps.redingathome.de:8080/add_to_cart.php?id_customer=ZPgk3zd3DzTsLrPLayNjAnAFTsh1&id_variant=1f6e0b8e-64a1-4ad8-a164-f892b754f504&id_product=0a1fe2d8-a0d9-4959-a4e3-1225447e0493
 - Remove from wishlist
-  http://vps.redingathome.de:8080/remove_favorite.php?id_customer=ZPgk3zd3DzTsLrPLayNjAnAFTsh1&id_variant=78d61665-1b1a-4d2b-85e1-9ee2d5c9a3e2
+  http://vps.redingathome.de:8080/remove_favorite.php?id_customer=ZPgk3zd3DzTsLrPLayNjAnAFTsh1&id_variant=1f6e0b8e-64a1-4ad8-a164-f892b754f504
 
 ## Start emulator with cold boot
 
