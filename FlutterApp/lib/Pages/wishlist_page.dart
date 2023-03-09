@@ -156,7 +156,7 @@ class _WishListPageState extends State<WishListPage> {
     return Stack(children: [
       StoreConnector<AppState, List<ShoppingItem>>(
         onInit: _fetchProducts,
-        converter: (store) => store.state.whishlist,
+        converter: (store) => store.state.wishlist,
         builder: (context, whishlist) {
           if (_isLoading) {
             return const Center(
@@ -170,6 +170,7 @@ class _WishListPageState extends State<WishListPage> {
             );
           }
           return ListView.builder(
+            physics: const BouncingScrollPhysics(),
             itemCount: whishlist.length,
             itemBuilder: (context, index) {
               final wishlistItem = whishlist[index];

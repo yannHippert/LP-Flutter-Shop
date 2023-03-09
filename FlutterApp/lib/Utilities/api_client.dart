@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_sweater_shop/Exceptions/api_exception.dart';
 import 'package:flutter_sweater_shop/Exceptions/register_exception.dart';
@@ -141,7 +139,7 @@ class ApiClient {
     String searchText = "",
     List<ProductCategory> categories = const [],
   }) async {
-    if (kDebugMode) print("[API_CLIENT] Fetching products");
+    if (kDebugMode) print("[API-CLIENT] Fetching products");
     const limit = 6;
     Map<String, dynamic> result = {};
     result.putIfAbsent("first", () => false);
@@ -175,7 +173,7 @@ class ApiClient {
         .toList();
 
     if (kDebugMode) {
-      print("[API_CLIENT] Fetched products: ${products.length} products");
+      print("[API-CLIENT] Fetched products: ${products.length} products");
     }
 
     if (products.isNotEmpty) {
@@ -263,10 +261,6 @@ class ApiClient {
           .collection('items')
           .doc(item.itemId)
           .set(item.toJson());
-
-      if (kDebugMode) {
-        print("[API-CLIENT] Set the basket-item");
-      }
     } catch (_) {
       throw ApiException(500);
     }

@@ -12,7 +12,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const App());
-  //ApiClient.generateSampleData();
 }
 
 class App extends StatefulWidget {
@@ -23,7 +22,7 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  final Store<AppState> _store = Store<AppState>(updateProductsReducer,
+  final Store<AppState> _store = Store<AppState>(appStateReducer,
       initialState: AppState.initialState(), middleware: [thunkMiddleware]);
 
   @override
@@ -49,6 +48,7 @@ class _AppState extends State<App> {
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
+            titleMedium: TextStyle(fontWeight: FontWeight.bold),
             labelLarge: TextStyle(
               fontSize: 20.0,
               fontWeight: FontWeight.bold,
