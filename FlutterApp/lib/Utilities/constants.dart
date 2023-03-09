@@ -11,6 +11,9 @@ const pagePadding = EdgeInsets.all(pagePaddingSize);
 
 final dateFormatter = DateFormat("dd/MM/yyyy HH:mm");
 
+const hSpacer = SizedBox(width: 10);
+const vSpacer = SizedBox(height: 10);
+
 final currencyFormatter = NumberFormat.currency(
   locale: "fr_EU",
   decimalDigits: 2,

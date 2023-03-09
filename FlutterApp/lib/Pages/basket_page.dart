@@ -87,7 +87,7 @@ class _BasketPageState extends State<BasketPage> {
     Future.wait([basketCompleter.future, wishlistCompleter.future])
         .then((_) => showScaffoldMessage(
               context,
-              AppLocalizations.of(context)!.item_added_to_basket(item.name),
+              AppLocalizations.of(context)!.item_moved_to_wishlist(item.name),
             ))
         .catchError(_handleError)
         .whenComplete(() => setState(() => _isActionInProgress = false));

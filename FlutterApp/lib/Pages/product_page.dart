@@ -96,6 +96,13 @@ class _ProductPageState extends State<ProductPage> {
     }
   }
 
+  bool _isPossibleSize(
+    ProductSize? size,
+    ProductColor? color,
+  ) {
+    return product.getVariant(size, color) != null;
+  }
+
   Widget _buildColorSelection() {
     if (product.isColorable) {
       return Wrap(
@@ -123,13 +130,6 @@ class _ProductPageState extends State<ProductPage> {
     return const SizedBox.shrink();
   }
 
-  bool _isPossibleSize(
-    ProductSize? size,
-    ProductColor? color,
-  ) {
-    return product.getVariant(size, color) != null;
-  }
-
   Widget _buildSizeSelection() {
     if (product.isSizeable) {
       return Wrap(
@@ -143,9 +143,7 @@ class _ProductPageState extends State<ProductPage> {
                 width: 60,
                 child: OutlinedButton(
                   onPressed: isPossible
-                      ? () => setState(() {
-                            _selectedSize = size;
-                          })
+                      ? () => setState(() => _selectedSize = size)
                       : null,
                   style: OutlinedButton.styleFrom(
                       side: _selectedSize == size
@@ -164,7 +162,7 @@ class _ProductPageState extends State<ProductPage> {
               isPossible
                   ? const SizedBox.shrink()
                   : Transform.rotate(
-                      angle: math.pi / 8,
+                      angle: math.pi / 6,
                       child: Container(
                         width: 60,
                         height: 3,
@@ -222,6 +220,17 @@ class _ProductPageState extends State<ProductPage> {
     );
   }
 
+  List<Widget> _buildDescription(String description) {
+    var parts = description.split(" - ");
+    return List.generate(
+      parts.length,
+      (index) => Text(
+        " - ${parts[index]}",
+        textAlign: TextAlign.left,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -232,9 +241,10 @@ class _ProductPageState extends State<ProductPage> {
           ),
           body: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Container(
+            child: Padding(
               padding: pagePadding,
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   ClipRRect(
                       borderRadius: BorderRadius.circular(6.0),
@@ -244,6 +254,7 @@ class _ProductPageState extends State<ProductPage> {
                         height: 200,
                         color: _selectedColor?.color,
                       )),
+                  vSpacer,
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -254,6 +265,7 @@ class _ProductPageState extends State<ProductPage> {
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                       ),
+                      hSpacer,
                       Text(
                         currencyFormatter.format(
                           product.getPrice(_selectedSize, _selectedColor),
@@ -262,23 +274,34 @@ class _ProductPageState extends State<ProductPage> {
                       ),
                     ],
                   ),
+                  vSpacer,
                   _buildSizeSelection(),
+                  const SizedBox(height: 5),
                   _buildColorSelection(),
+                  vSpacer,
                   StoreConnector<AppState, UserInfo>(
-                      converter: (store) => store.state.userInfo,
-                      builder: (context, UserInfo userInfo) {
-                        return userInfo.isLoggedIn
-                            ? Column(
-                                children: [
-                                  _buildAddToBasketButton(),
-                                  _buildAddToWishlistButton(),
-                                ],
-                              )
-                            : _buildLoginButton();
-                      }),
-                  Text(
-                    product.description,
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    converter: (store) => store.state.userInfo,
+                    builder: (context, UserInfo userInfo) {
+                      return userInfo.isLoggedIn
+                          ? Column(
+                              children: [
+                                _buildAddToBasketButton(),
+                                _buildAddToWishlistButton(),
+                              ],
+                            )
+                          : _buildLoginButton();
+                    },
+                  ),
+                  vSpacer,
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizations.of(context)!.description,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      ..._buildDescription(product.description)
+                    ],
                   ),
                 ],
               ),

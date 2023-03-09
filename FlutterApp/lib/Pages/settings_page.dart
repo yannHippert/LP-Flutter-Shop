@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_sweater_shop/Models/user_info.dart';
 import 'package:flutter_sweater_shop/Utilities/constants.dart';
 import 'package:flutter_sweater_shop/Utilities/messenger.dart';
 import 'package:flutter_sweater_shop/redux/actions/authentication.dart';
@@ -10,6 +11,7 @@ import 'package:settings_ui/settings_ui.dart';
 
 class SettingsPage extends StatelessWidget {
   final _storage = const FlutterSecureStorage();
+  final iconSize = 32.0;
 
   const SettingsPage({super.key});
 
@@ -26,17 +28,27 @@ class SettingsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SettingsList(
-      sections: [
-        SettingsSection(
+    return StoreConnector<AppState, UserInfo>(
+      converter: (store) => store.state.userInfo,
+      builder: (context, userInfo) => SettingsList(
+        sections: [
+          SettingsSection(
             title: Text(AppLocalizations.of(context)!.account),
             tiles: <SettingsTile>[
+              SettingsTile.navigation(
+                leading: Icon(Icons.account_circle, size: iconSize),
+                title: Text(AppLocalizations.of(context)!.email),
+                value: Text(userInfo.email),
+              ),
               SettingsTile(
-                  title: Text(AppLocalizations.of(context)!.logout,
-                      textAlign: TextAlign.center),
-                  onPressed: _onLogout)
-            ]),
-      ],
+                leading: Icon(Icons.logout, size: iconSize),
+                title: Text(AppLocalizations.of(context)!.logout),
+                onPressed: _onLogout,
+              )
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
